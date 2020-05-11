@@ -5,6 +5,7 @@
 
 FetchData::FetchData()
 {
+    this->dataSearchDone = false;
     manager = new QNetworkAccessManager();
     QObject::connect(manager, SIGNAL(finished(QNetworkReply*)),
         this, SLOT(managerFinished(QNetworkReply*)));
@@ -21,6 +22,16 @@ void FetchData::getData(){
     manager->get(request);
 }
 
+QList<Contact> FetchData::getList()
+{
+    return this->contactlist;
+}
+
+bool FetchData::getSearchStatus()
+{
+    return this->dataSearchDone;
+}
+
 
 void FetchData::managerFinished(QNetworkReply *reply) {
     if (reply->error()) {
@@ -32,7 +43,7 @@ void FetchData::managerFinished(QNetworkReply *reply) {
 
     QJsonDocument jsonResponse = QJsonDocument::fromJson(answer.toUtf8());
     QJsonArray jsonArray = jsonResponse.array();
-
+    contactlist.clear();
     foreach (const QJsonValue & v, jsonArray)
     {
         QJsonObject obj = v.toObject();
@@ -41,7 +52,15 @@ void FetchData::managerFinished(QNetworkReply *reply) {
             qDebug() << id.toInt();
         qDebug() << obj.value("firstname").toString() + " " + obj.value("lastname").toString();
         qDebug() << "Mobile:" + obj.value("mobile").toString() + ", Email:" + obj.value("email").toString();
+        Contact contact = Contact(obj.value("id").toInt(),
+                                      obj.value("firstname").toString(),
+                                      obj.value("lastname").toString(),
+                                      obj.value("mobile").toString(),
+                                      obj.value("email").toString());
+        contactlist.append(contact);
 
     }
+    this->dataSearchDone = true;
+
 }
 

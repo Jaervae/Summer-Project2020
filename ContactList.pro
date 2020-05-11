@@ -16,6 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         contact.cpp \
+        contactlist.cpp \
+        contactmodel.cpp \
         fetchdata.cpp \
         main.cpp
 
@@ -35,7 +37,8 @@ android: include(C:/Users/ollij/Android/sdk/android_openssl/openssl.pri)
 
 HEADERS += \
     contact.h \
+    contactlist.h \
+    contactmodel.h \
     fetchdata.h
 
-DISTFILES += \
-    MainScreen.qml
+DISTFILES +=

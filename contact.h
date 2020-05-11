@@ -1,16 +1,37 @@
 #ifndef CONTACT_H
 #define CONTACT_H
 
-#include <QObject>
+#include <qstring.h>
 
-class Contact : public QObject
+
+
+
+class Contact
 {
-    Q_OBJECT
 public:
-    explicit Contact(QObject *parent = nullptr);
+    Contact(int id, QString fn, QString ln, QString mobile, QString email);
+    ~Contact();
 
+   int getID();
 
+   QString getFN();
+   void setFN(QString mFN);
 
+   QString getLN();
+   void setLN(QString mLN);
+
+   QString getMobile();
+   void setMobile(QString mMobile);
+
+   QString getEmail();
+   void setEmail(QString mEmail);
+
+private:
+   int id;
+   QString fn;
+   QString ln;
+   QString mobile;
+   QString email;
 };
 
 #endif // CONTACT_H
