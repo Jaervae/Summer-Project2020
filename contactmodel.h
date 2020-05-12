@@ -14,8 +14,10 @@ public:
     explicit ContactModel(QObject *parent = nullptr);
 
     enum {
-            DoneRole = Qt::UserRole,
-            DescriptionRole
+            NewEntryRole = Qt::UserRole,
+            DescriptionRole,
+            MobileRole,
+            EmailRole,
         };
 
         // Basic functionality:

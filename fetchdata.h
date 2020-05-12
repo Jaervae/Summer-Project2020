@@ -16,8 +16,10 @@ public:
     ~FetchData();
 
     void getData();
-    QList<Contact> getList();
+    void putData(Contact contact, bool isNew);
     bool getSearchStatus();
+    QList<Contact> getList();
+
 
 private:
     QNetworkAccessManager *manager;
@@ -27,6 +29,7 @@ private:
 
 private slots:
     void managerFinished(QNetworkReply *reply);
+    void replyFinished(QNetworkReply *reply);
 
 };
 

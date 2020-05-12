@@ -6,8 +6,10 @@
 
 struct ContactItem
 {
-    bool done;
+    bool newEntry;
     QString description;
+    QString mobile;
+    QString email;
 };
 
 class ContactList : public QObject
@@ -27,9 +29,14 @@ signals:
     void preItemRemoved(int index);
     void postItemRemoved();
 
+    void preItemSave();
+    void postItemSave();
+
 public slots:
     void appendItem();
     void removeCompletedItems();
+    void removeOne(int index);
+    void saveChanges(int index, QString m_desc, QString m_mobile, QString m_email);
 
 private:
     QVector<ContactItem> mItems;

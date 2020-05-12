@@ -18,14 +18,15 @@ ContactList::ContactList(QObject *parent) : QObject(parent)
     QList<Contact> qList = fetchdata->getList();
     qDebug()<< "Search done, list size:";
     qDebug()<< qList.length();
-    /*
-    mItems.append({ true, QStringLiteral("Wash the car") });
-    mItems.append({ false, QStringLiteral("Fix the sink") });
-    */
-    for (int i = 0; i <= qList.length() ; i++){
+
+    for (int i = 0; i < qList.length() ; i++){
         QString name = qList[i].getFN() + " " + qList[i].getLN();
-        mItems.append({false, name});
+        QString mobile = qList[i].getMobile();
+        QString email = qList[i].getEmail();
+        mItems.append({false, name, mobile, email});
+        qDebug()<<"Lisätty: " + name;
     }
+    qDebug()<<"Kaikki lisatty";
 }
 
 QVector<ContactItem> ContactList::items() const
@@ -39,7 +40,7 @@ bool ContactList::setItemAt(int index, const ContactItem &item)
         return false;
 
     const ContactItem &oldItem = mItems.at(index);
-    if (item.done == oldItem.done && item.description == oldItem.description)
+    if (item.newEntry == oldItem.newEntry && item.description == oldItem.description)
         return false;
 
     mItems[index] = item;
@@ -51,7 +52,7 @@ void ContactList::appendItem()
     emit preItemAppended();
 
     ContactItem item;
-    item.done = false;
+    item.newEntry = true;
     mItems.append(item);
 
     emit postItemAppended();
@@ -60,14 +61,40 @@ void ContactList::appendItem()
 void ContactList::removeCompletedItems()
 {
     for (int i = 0; i < mItems.size(); ) {
-        if (mItems.at(i).done) {
-            emit preItemRemoved(i);
-
-            mItems.removeAt(i);
-
-            emit postItemRemoved();
+        if (mItems.at(i).newEntry) {
+            removeOne(i);
         } else {
             ++i;
         }
     }
+}
+
+void ContactList::removeOne(int index)
+{
+    emit preItemRemoved(index);
+
+    mItems.removeAt(index);
+
+    emit postItemRemoved();
+}
+
+void ContactList::saveChanges(int index, QString m_desc, QString m_mobile, QString m_email)
+{
+   emit preItemSave();
+
+   QStringList fullname = m_desc.split(' ');
+   QString ln = fullname.last();
+   fullname.removeLast();
+   QString fn = fullname.join(' ');
+   QString mobile = m_mobile;
+   QString email = m_email;
+
+   Contact contact = Contact(fn,ln,mobile,email);
+
+   FetchData *fetchdata = new FetchData();
+   fetchdata->putData(contact, mItems[index].newEntry);
+
+   mItems[index].newEntry = false;
+
+   emit postItemSave();
 }

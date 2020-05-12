@@ -10,6 +10,7 @@ class Contact
 {
 public:
     Contact(int id, QString fn, QString ln, QString mobile, QString email);
+    Contact(QString fn, QString ln, QString mobile, QString email);
     ~Contact();
 
    int getID();

@@ -10,6 +10,14 @@ Contact::Contact(int id, QString fn, QString ln, QString mobile, QString email)
     this->email = email;
 }
 
+Contact::Contact(QString fn, QString ln, QString mobile, QString email)
+{
+    this->fn = fn;
+    this->ln = ln;
+    this->mobile = mobile;
+    this->email = email;
+}
+
 Contact::~Contact()
 {
 

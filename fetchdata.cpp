@@ -17,9 +17,41 @@ FetchData::~FetchData()
 }
 
 void FetchData::getData(){
-    qDebug()<< "connecting";
     request.setUrl(QUrl("https://qtphone.herokuapp.com/contact"));
     manager->get(request);
+}
+
+void FetchData::putData(Contact contact, bool isNew)
+{
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+
+    QJsonObject json;
+    json.insert("firstname", contact.getFN());
+    json.insert("lastname", contact.getLN());
+    json.insert("mobile", contact.getMobile());
+    json.insert("email", contact.getEmail());
+
+    QString name = contact.getFN() + " " + contact.getLN();
+
+    QObject::connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(replyFinished(QNetworkReply *)));
+
+    if(isNew){
+        QUrl url("https://qtphone.herokuapp.com/contact");
+        QNetworkRequest request(url);
+
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        manager->post(request, QJsonDocument(json).toJson());
+    }
+
+    else{
+        int id = NULL;
+        QString url = QStringLiteral("https://qtphone.herokuapp.com/contact/");
+        QUrl qurl(url);
+        QNetworkRequest request(qurl);
+
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        manager->put(request, QJsonDocument(json).toJson());
+    }
 }
 
 QList<Contact> FetchData::getList()
@@ -61,6 +93,19 @@ void FetchData::managerFinished(QNetworkReply *reply) {
 
     }
     this->dataSearchDone = true;
+
+}
+
+void FetchData::replyFinished(QNetworkReply *reply)
+{
+    if (reply->error()) {
+        qDebug() << reply->errorString();
+        return;
+    }
+
+    QString answer = reply->readAll();
+    qDebug() << answer.toUtf8();
+    getData();
 
 }
 

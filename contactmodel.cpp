@@ -24,10 +24,14 @@ QVariant ContactModel::data(const QModelIndex &index, int role) const
 
     const ContactItem item = mList->items().at(index.row());
     switch (role) {
-    case DoneRole:
-        return QVariant(item.done);
+    case NewEntryRole:
+        return QVariant(item.newEntry);
     case DescriptionRole:
         return QVariant(item.description);
+    case MobileRole:
+        return QVariant(item.mobile);
+    case EmailRole:
+        return QVariant(item.email);
     }
 
     return QVariant();
@@ -40,11 +44,17 @@ bool ContactModel::setData(const QModelIndex &index, const QVariant &value, int 
 
     ContactItem item = mList->items().at(index.row());
     switch (role) {
-    case DoneRole:
-        item.done = value.toBool();
+    case NewEntryRole:
+        item.newEntry = value.toBool();
         break;
     case DescriptionRole:
         item.description = value.toString();
+        break;
+    case MobileRole:
+        item.mobile = value.toString();
+        break;
+    case EmailRole:
+        item.email = value.toString();
         break;
     }
 
@@ -66,8 +76,10 @@ Qt::ItemFlags ContactModel::flags(const QModelIndex &index) const
 QHash<int, QByteArray> ContactModel::roleNames() const
 {
     QHash<int, QByteArray> names;
-    names[DoneRole] = "done";
+    names[NewEntryRole] = "newEntry";
     names[DescriptionRole] = "description";
+    names[MobileRole] = "mobile";
+    names[EmailRole] = "email";
     return names;
 }
 
