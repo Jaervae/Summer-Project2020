@@ -45,7 +45,7 @@ void FetchData::putData(Contact contact, bool isNew)
 
     else{
         int id = NULL;
-        QString url = QStringLiteral("https://qtphone.herokuapp.com/contact/");
+        QString url = QStringLiteral("https://qtphone.herokuapp.com/contact/35");
         QUrl qurl(url);
         QNetworkRequest request(qurl);
 

@@ -83,8 +83,11 @@ void ContactList::saveChanges(int index, QString m_desc, QString m_mobile, QStri
    emit preItemSave();
 
    QStringList fullname = m_desc.split(' ');
-   QString ln = fullname.last();
-   fullname.removeLast();
+   QString ln;
+   if(fullname.length() > 1){
+       ln = fullname.last();
+       fullname.removeLast();
+   } else ln = "";
    QString fn = fullname.join(' ');
    QString mobile = m_mobile;
    QString email = m_email;
