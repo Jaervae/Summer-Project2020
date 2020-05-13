@@ -3,9 +3,6 @@
 
 #include <qstring.h>
 
-
-
-
 class Contact
 {
 public:

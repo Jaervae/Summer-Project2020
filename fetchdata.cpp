@@ -44,8 +44,8 @@ void FetchData::putData(Contact contact, bool isNew)
     }
 
     else{
-        int id = NULL;
-        QString url = QStringLiteral("https://qtphone.herokuapp.com/contact/35");
+        int id = contact.getID();
+        QString url = QStringLiteral("https://qtphone.herokuapp.com/contact/%1").arg(id);
         QUrl qurl(url);
         QNetworkRequest request(qurl);
 
@@ -54,9 +54,36 @@ void FetchData::putData(Contact contact, bool isNew)
     }
 }
 
+void FetchData::removeById(int id)
+{
+    manager = new QNetworkAccessManager();
+
+    QObject::connect(manager, SIGNAL(finished(QNetworkReply *)),
+                     this, SLOT(deleteSlot(QNetworkReply *)));
+    QString url = QStringLiteral("https://qtphone.herokuapp.com/contact/%1").arg(id);
+    qDebug() << url;
+    request.setUrl(QUrl(url));
+
+    manager->deleteResource(request);
+
+}
+
 QList<Contact> FetchData::getList()
 {
     return this->contactlist;
+}
+
+void FetchData::getNewEntryID(QString name)
+{
+    this->dataSearchDone = false;
+    manager = new QNetworkAccessManager();
+    QObject::connect(manager, SIGNAL(finished(QNetworkReply*)),
+        this, SLOT(getnewest(QNetworkReply *)));
+
+    this->wantedItem = name;
+
+    request.setUrl(QUrl("https://qtphone.herokuapp.com/contact"));
+    manager->get(request);
 }
 
 bool FetchData::getSearchStatus()
@@ -107,5 +134,45 @@ void FetchData::replyFinished(QNetworkReply *reply)
     qDebug() << answer.toUtf8();
     getData();
 
+}
+
+void FetchData::getnewest(QNetworkReply *reply)
+{
+    if (reply->error()) {
+        qDebug() << reply->errorString();
+        return;
+    }
+
+    QString answer = reply->readAll();
+
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(answer.toUtf8());
+    QJsonArray jsonArray = jsonResponse.array();
+    foreach (const QJsonValue & v, jsonArray)
+    {
+        QJsonObject obj = v.toObject();
+        QJsonValue id = obj.value("id");
+        if (!id.isUndefined()){
+            qDebug() << id.toInt();
+            QString currentName = obj.value("firstname").toString() + " " + obj.value("lastname").toString();
+            if(currentName == this->wantedItem){
+                this->wantedID = id.toInt();
+                break;
+            }
+        }
+
+    }
+    this->dataSearchDone = true;
+}
+
+void FetchData::deleteSlot(QNetworkReply *reply)
+{
+    if (reply->error()) {
+        qDebug() << reply->errorString();
+        qDebug() << "Fail";
+        return;
+    }
+
+    QString answer = reply->readAll();
+    qDebug() << "Success";
 }
 

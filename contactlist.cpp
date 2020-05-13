@@ -7,26 +7,7 @@
 
 ContactList::ContactList(QObject *parent) : QObject(parent)
 {
-    FetchData *fetchdata = new FetchData();
-    fetchdata->getData();
-    while (fetchdata->getSearchStatus() == false) {
-        QTime dieTime= QTime::currentTime().addSecs(1);
-        while (QTime::currentTime() < dieTime)
-            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-        qDebug()<< "Search is not done";
-    }
-    QList<Contact> qList = fetchdata->getList();
-    qDebug()<< "Search done, list size:";
-    qDebug()<< qList.length();
-
-    for (int i = 0; i < qList.length() ; i++){
-        QString name = qList[i].getFN() + " " + qList[i].getLN();
-        QString mobile = qList[i].getMobile();
-        QString email = qList[i].getEmail();
-        mItems.append({false, name, mobile, email});
-        qDebug()<<"Lisätty: " + name;
-    }
-    qDebug()<<"Kaikki lisatty";
+    this->getData();
 }
 
 QVector<ContactItem> ContactList::items() const
@@ -45,6 +26,32 @@ bool ContactList::setItemAt(int index, const ContactItem &item)
 
     mItems[index] = item;
     return true;
+}
+
+void ContactList::getData()
+{
+    FetchData *fetchdata = new FetchData();
+    fetchdata->getData();
+    while (fetchdata->getSearchStatus() == false) {
+        QTime dieTime= QTime::currentTime().addSecs(1);
+        while (QTime::currentTime() < dieTime)
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        qDebug()<< "Search is not done";
+    }
+    QList<Contact> qList = fetchdata->getList();
+    qDebug()<< "Search done, list size:";
+    qDebug()<< qList.length();
+
+    if(mItems.length() >= 0) mItems.clear();
+    for (int i = 0; i < qList.length() ; i++){
+        QString name = qList[i].getFN() + " " + qList[i].getLN();
+        QString mobile = qList[i].getMobile();
+        QString email = qList[i].getEmail();
+        int id = qList[i].getID();
+        mItems.append({false, name, mobile, email,id});
+        qDebug()<<"Lisätty: " + name;
+    }
+    qDebug()<<"Kaikki lisatty";
 }
 
 void ContactList::appendItem()
@@ -73,12 +80,14 @@ void ContactList::removeOne(int index)
 {
     emit preItemRemoved(index);
 
+    FetchData *fetchdata = new FetchData();
+    fetchdata->removeById(mItems[index].id);
     mItems.removeAt(index);
 
     emit postItemRemoved();
 }
 
-void ContactList::saveChanges(int index, QString m_desc, QString m_mobile, QString m_email)
+void ContactList::saveChanges(int index, QString m_desc, QString m_mobile, QString m_email, int id)
 {
    emit preItemSave();
 
@@ -89,15 +98,19 @@ void ContactList::saveChanges(int index, QString m_desc, QString m_mobile, QStri
        fullname.removeLast();
    } else ln = "";
    QString fn = fullname.join(' ');
-   QString mobile = m_mobile;
-   QString email = m_email;
 
-   Contact contact = Contact(fn,ln,mobile,email);
+   Contact contact = Contact(id, fn,ln,m_mobile,m_email);
 
    FetchData *fetchdata = new FetchData();
    fetchdata->putData(contact, mItems[index].newEntry);
 
    mItems[index].newEntry = false;
-
+   fetchdata->getNewEntryID(m_desc);
+   while (fetchdata->getSearchStatus() == false) {
+       QTime dieTime= QTime::currentTime().addMSecs(200);
+       while (QTime::currentTime() < dieTime)
+           QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+   }
+   mItems[index].id = fetchdata->getWantedID();
    emit postItemSave();
 }

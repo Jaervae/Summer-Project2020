@@ -1,8 +1,11 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
+import QtQuick.Dialogs 1.2
 
 import Contact 1.0
+
+
 
 ColumnLayout {
     width: parent.width - 10
@@ -92,8 +95,83 @@ ColumnLayout {
                         RowLayout{
                             Button {
                                 text: qsTr("Delete")
-                                onClicked: contactList.removeOne(index);
+                                onClicked: dialog.visible = true;
                                 Layout.fillWidth: true
+                            }
+                            Dialog {
+                                visible: false
+                                id:dialog
+                                title: "Blue sky dialog"
+                                contentItem: Rectangle {
+                                    color: "black"
+                                    implicitHeight: 150
+                                    implicitWidth: 300
+                                    opacity: enabled ? 1 : 0.3
+                                    border.color: "#21be2b"
+                                    border.width: 1
+                                    radius: 5
+                                    Text {
+                                        text: "Do you want to delete " + nametxt.txt
+                                        color: "#21be2b"
+                                        anchors.centerIn: parent
+                                    }
+                                    RowLayout {
+                                        anchors.bottom: parent.bottom
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        Button {
+                                            text: qsTr("Cancel")
+                                            id: btn1
+                                            Layout.fillWidth: true
+                                            onClicked: dialog.visible = false
+                                            contentItem: Text {
+                                                text: btn1.text
+                                                font: btn1.font
+                                                opacity: enabled ? 1.0 : 0.3
+                                                color: btn1.down ? "#17a81a" : "#21be2b"
+                                                horizontalAlignment: Text.AlignHCenter
+                                                verticalAlignment: Text.AlignVCenter
+                                                elide: Text.ElideRight
+                                            }
+                                            background: Rectangle {
+                                                color: "transparent"
+                                                implicitWidth: 100
+                                                implicitHeight: 40
+                                                opacity: enabled ? 1 : 0.3
+                                                border.color: btn1.down ? "#17a81a" : "#21be2b"
+                                                border.width: 1
+                                                radius: 5
+                                            }
+                                        }
+                                        Button {
+                                            id: btn2
+                                            text: qsTr("Remove")
+                                            Layout.fillWidth: true
+                                            onClicked: {
+                                                contactList.removeOne(index)
+                                                dialog.visible = false
+                                            }
+                                            contentItem: Text {
+                                                text: btn2.text
+                                                font: btn2.font
+                                                opacity: enabled ? 1.0 : 0.3
+                                                color: btn2.down ? "#17a81a" : "#21be2b"
+                                                horizontalAlignment: Text.AlignHCenter
+                                                verticalAlignment: Text.AlignVCenter
+                                                elide: Text.ElideRight
+                                            }
+                                            background: Rectangle {
+                                                color: "transparent"
+                                                implicitWidth: 100
+                                                implicitHeight: 40
+                                                opacity: enabled ? 1 : 0.3
+                                                border.color: btn2.down ? "#17a81a" : "#21be2b"
+                                                border.width: 1
+                                                radius: 5
+                                            }
+                                        }
+                                    }
+
+                                }
                             }
                             RowLayout{
                                 id: buttonEditRow
@@ -112,7 +190,7 @@ ColumnLayout {
                                     text: qsTr("Save changes")
                                     onClicked: function(){
                                         if (nametxt.text != "" && nametxt.text != null && mobiletxt.text != "" && mobiletxt.text != null ){
-                                            contactList.saveChanges(index, nametxt.text, mobiletxt.text, emailtxt.text);
+                                            contactList.saveChanges(index, nametxt.text, mobiletxt.text, emailtxt.text, model.id);
                                             buttonEditRow.visible = false;
                                             buttonEnableEdit.visible = true;
                                             mousearea.enabled = true;
@@ -195,4 +273,7 @@ ColumnLayout {
             }
         }
     }
+
 }
+
+

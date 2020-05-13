@@ -32,6 +32,8 @@ QVariant ContactModel::data(const QModelIndex &index, int role) const
         return QVariant(item.mobile);
     case EmailRole:
         return QVariant(item.email);
+    case IDRole:
+        return QVariant(item.id);
     }
 
     return QVariant();
@@ -55,6 +57,9 @@ bool ContactModel::setData(const QModelIndex &index, const QVariant &value, int 
         break;
     case EmailRole:
         item.email = value.toString();
+        break;
+    case IDRole:
+        item.id = value.toInt();
         break;
     }
 
@@ -80,6 +85,7 @@ QHash<int, QByteArray> ContactModel::roleNames() const
     names[DescriptionRole] = "description";
     names[MobileRole] = "mobile";
     names[EmailRole] = "email";
+    names[IDRole] = "id";
     return names;
 }
 

@@ -17,19 +17,27 @@ public:
 
     void getData();
     void putData(Contact contact, bool isNew);
+    void removeById(int id);
     bool getSearchStatus();
-    QList<Contact> getList();
+    void getNewEntryID(QString name);
+    int getWantedID(){return this->wantedID;};
 
+    QList<Contact> getList();
 
 private:
     QNetworkAccessManager *manager;
     QNetworkRequest request;
     QList<Contact> contactlist;
+    QString wantedItem;
+
     bool dataSearchDone;
+    int wantedID;
 
 private slots:
     void managerFinished(QNetworkReply *reply);
     void replyFinished(QNetworkReply *reply);
+    void getnewest(QNetworkReply *reply);
+    void deleteSlot(QNetworkReply *reply);
 
 };
 

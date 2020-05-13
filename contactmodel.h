@@ -18,6 +18,7 @@ public:
             DescriptionRole,
             MobileRole,
             EmailRole,
+            IDRole
         };
 
         // Basic functionality:
