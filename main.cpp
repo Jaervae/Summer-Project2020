@@ -5,6 +5,7 @@
 #include <QNetworkReply>
 #include <iostream>
 #include <QQmlContext>
+#include <QStandardPaths>
 
 #include "fetchdata.h"
 #include "contactlist.h"
@@ -21,6 +22,8 @@ int main(int argc, char *argv[])
         QStringLiteral("ContactList should not be created in QML"));
 
     ContactList contactList;
+
+
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("contactList"), &contactList);

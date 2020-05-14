@@ -69,19 +69,19 @@ void ContactList::removeCompletedItems()
 {
     for (int i = 0; i < mItems.size(); ) {
         if (mItems.at(i).newEntry) {
-            removeOne(i);
+            removeOne(i,false);
         } else {
             ++i;
         }
     }
 }
 
-void ContactList::removeOne(int index)
+void ContactList::removeOne(int index, bool removefromdb)
 {
     emit preItemRemoved(index);
 
     FetchData *fetchdata = new FetchData();
-    fetchdata->removeById(mItems[index].id);
+    if (removefromdb)fetchdata->removeById(mItems[index].id);
     mItems.removeAt(index);
 
     emit postItemRemoved();

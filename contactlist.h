@@ -37,7 +37,7 @@ public slots:
     void getData();
     void appendItem();
     void removeCompletedItems();
-    void removeOne(int index);
+    void removeOne(int index, bool removefromdb);
     void saveChanges(int index, QString m_desc, QString m_mobile, QString m_email, int id);
 
 private:

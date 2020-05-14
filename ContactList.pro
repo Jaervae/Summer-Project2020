@@ -19,7 +19,8 @@ SOURCES += \
         contactlist.cpp \
         contactmodel.cpp \
         fetchdata.cpp \
-        main.cpp
+        main.cpp \
+        settings.cpp
 
 RESOURCES += qml.qrc
 
@@ -39,6 +40,8 @@ HEADERS += \
     contact.h \
     contactlist.h \
     contactmodel.h \
-    fetchdata.h
+    fetchdata.h \
+    settings.h
 
-DISTFILES +=
+DISTFILES += \
+    images/menuicon.png

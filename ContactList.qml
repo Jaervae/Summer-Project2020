@@ -8,8 +8,8 @@ import Contact 1.0
 
 
 ColumnLayout {
-    width: parent.width - 10
-    height: parent.height - 10
+    width: parent.width
+    height: parent.height
     Frame {
         Layout.fillWidth: true
         Layout.fillHeight: true
@@ -20,6 +20,7 @@ ColumnLayout {
         }
 
         ListView {
+            id: contactListView
             implicitWidth: parent.width
             implicitHeight: parent.height
             clip: true
@@ -48,6 +49,7 @@ ColumnLayout {
                             expandable_box.visible == true ?
                                         closeFrame.start() :
                                         openFrame.start()
+
                         }
                     }
                     ColumnLayout{
@@ -101,21 +103,28 @@ ColumnLayout {
                             Dialog {
                                 visible: false
                                 id:dialog
-                                title: "Blue sky dialog"
+                                title: "Delete"
                                 contentItem: Rectangle {
-                                    color: "black"
-                                    implicitHeight: 150
+                                    implicitHeight: 100
                                     implicitWidth: 300
+                                    color: "black"
                                     opacity: enabled ? 1 : 0.3
                                     border.color: "#21be2b"
                                     border.width: 1
                                     radius: 5
-                                    Text {
-                                        text: "Do you want to delete " + nametxt.txt
-                                        color: "#21be2b"
-                                        anchors.centerIn: parent
+                                    RowLayout{
+                                        anchors.topMargin: 15
+                                        anchors.top: parent.top
+                                        anchors.horizontalCenter: parent.horizontalCenter
+
+                                        Text {
+                                            text: "Do you want to delete " + model.description
+                                            color: "#21be2b"
+                                        }
                                     }
                                     RowLayout {
+                                        anchors.topMargin: 10
+                                        anchors.bottomMargin: 15
                                         anchors.bottom: parent.bottom
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         Button {
@@ -147,7 +156,7 @@ ColumnLayout {
                                             text: qsTr("Remove")
                                             Layout.fillWidth: true
                                             onClicked: {
-                                                contactList.removeOne(index)
+                                                contactList.removeOne(index, true)
                                                 dialog.visible = false
                                             }
                                             contentItem: Text {
@@ -227,7 +236,10 @@ ColumnLayout {
         Button {
             text: qsTr("Add new item")
             id: control
-            onClicked: contactList.appendItem()
+            onClicked: {
+                contactList.appendItem();
+                contactListView.flick(0,-1000);
+            }
             Layout.fillWidth: true
             contentItem: Text {
                 text: control.text

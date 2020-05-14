@@ -3,5 +3,7 @@
         <file>main.qml</file>
         <file>ContactList.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>Settings.qml</file>
+        <file>SettingsForm.ui.qml</file>
     </qresource>
 </RCC>
