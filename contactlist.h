@@ -1,6 +1,7 @@
 #ifndef CONTACTLIST_H
 #define CONTACTLIST_H
 
+#include <QAbstractListModel>
 #include <QObject>
 #include <QVector>
 
@@ -20,6 +21,7 @@ public:
     explicit ContactList(QObject *parent = nullptr);
 
     QVector<ContactItem> items() const;
+    QVector<ContactItem> visibleItems() const;
 
     bool setItemAt(int index, const ContactItem &item);
 
@@ -33,14 +35,19 @@ signals:
     void preItemSave();
     void postItemSave();
 
+
+
 public slots:
     void getData();
     void appendItem();
     void removeCompletedItems();
     void removeOne(int index, bool removefromdb);
+    void removeVisible(int index);
     void saveChanges(int index, QString m_desc, QString m_mobile, QString m_email, int id);
+    void searchContacts(QString value);
 
 private:
     QVector<ContactItem> mItems;
+    QVector<ContactItem> mVisibleList;
 };
 #endif // CONTACTLIST_H

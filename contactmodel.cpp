@@ -3,7 +3,7 @@
 
 ContactModel::ContactModel(QObject *parent)
     : QAbstractListModel(parent)
-    , mList(nullptr)
+    , mVisibleList(nullptr)
 {
 }
 
@@ -11,18 +11,18 @@ int ContactModel::rowCount(const QModelIndex &parent) const
 {
     // For list models only the root node (an invalid parent) should return the list's size. For all
     // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
-    if (parent.isValid() || !mList)
+    if (parent.isValid() || !mVisibleList)
         return 0;
 
-    return mList->items().size();
+    return mVisibleList->visibleItems().size();
 }
 
 QVariant ContactModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || !mList)
+    if (!index.isValid() || !mVisibleList)
         return QVariant();
 
-    const ContactItem item = mList->items().at(index.row());
+    const ContactItem item = mVisibleList->visibleItems().at(index.row());
     switch (role) {
     case NewEntryRole:
         return QVariant(item.newEntry);
@@ -41,10 +41,10 @@ QVariant ContactModel::data(const QModelIndex &index, int role) const
 
 bool ContactModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (!mList)
+    if (!mVisibleList)
         return false;
 
-    ContactItem item = mList->items().at(index.row());
+    ContactItem item = mVisibleList->visibleItems().at(index.row());
     switch (role) {
     case NewEntryRole:
         item.newEntry = value.toBool();
@@ -63,7 +63,7 @@ bool ContactModel::setData(const QModelIndex &index, const QVariant &value, int 
         break;
     }
 
-    if (mList->setItemAt(index.row(), item)) {
+    if (mVisibleList->setItemAt(index.row(), item)) {
         emit dataChanged(index, index, QVector<int>() << role);
         return true;
     }
@@ -91,33 +91,36 @@ QHash<int, QByteArray> ContactModel::roleNames() const
 
 ContactList *ContactModel::list() const
 {
-    return mList;
+    return mVisibleList;
 }
 
 void ContactModel::setList(ContactList *list)
 {
     beginResetModel();
 
-    if (mList)
-        mList->disconnect(this);
+    if (mVisibleList)
+        mVisibleList->disconnect(this);
 
-    mList = list;
+    mVisibleList = list;
 
-    if (mList) {
-        connect(mList, &ContactList::preItemAppended, this, [=]() {
-            const int index = mList->items().size();
+    if (mVisibleList) {
+        connect(mVisibleList, &ContactList::preItemAppended, this, [=]() {
+            const int index = mVisibleList->visibleItems().size();
             beginInsertRows(QModelIndex(), index, index);
         });
-        connect(mList, &ContactList::postItemAppended, this, [=]() {
+        connect(mVisibleList, &ContactList::postItemAppended, this, [=]() {
             endInsertRows();
         });
 
-        connect(mList, &ContactList::preItemRemoved, this, [=](int index) {
+
+        connect(mVisibleList, &ContactList::preItemRemoved, this, [=](int index) {
             beginRemoveRows(QModelIndex(), index, index);
         });
-        connect(mList, &ContactList::postItemRemoved, this, [=]() {
+        connect(mVisibleList, &ContactList::postItemRemoved, this, [=]() {
             endRemoveRows();
         });
+
+
     }
 
     endResetModel();

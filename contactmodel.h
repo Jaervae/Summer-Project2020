@@ -35,10 +35,12 @@ public:
         virtual QHash<int, QByteArray> roleNames() const override;
 
         ContactList *list() const;
+        ContactList *visiblelist() const;
         void setList(ContactList *list);
 
     private:
         ContactList *mList;
+        ContactList *mVisibleList;
     };
 
 #endif // CONTACTLISTMODEL_H

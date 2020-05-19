@@ -15,16 +15,21 @@ QVector<ContactItem> ContactList::items() const
     return mItems;
 }
 
+QVector<ContactItem> ContactList::visibleItems() const
+{
+    return mVisibleList;
+}
+
 bool ContactList::setItemAt(int index, const ContactItem &item)
 {
-    if (index < 0 || index >= mItems.size())
+    if (index < 0 || index >= mVisibleList.size())
         return false;
 
-    const ContactItem &oldItem = mItems.at(index);
+    const ContactItem &oldItem = items().at(index);
     if (item.newEntry == oldItem.newEntry && item.description == oldItem.description)
         return false;
 
-    mItems[index] = item;
+    mVisibleList[index] = item;
     return true;
 }
 
@@ -51,6 +56,7 @@ void ContactList::getData()
         mItems.append({false, name, mobile, email,id});
         qDebug()<<"Lisätty: " + name;
     }
+    mVisibleList = mItems;
     qDebug()<<"Kaikki lisatty";
 }
 
@@ -59,11 +65,14 @@ void ContactList::appendItem()
     emit preItemAppended();
 
     ContactItem item;
+
     item.newEntry = true;
     mItems.append(item);
+    mVisibleList.append(item);
 
     emit postItemAppended();
 }
+
 
 void ContactList::removeCompletedItems()
 {
@@ -74,18 +83,33 @@ void ContactList::removeCompletedItems()
             ++i;
         }
     }
+
 }
 
 void ContactList::removeOne(int index, bool removefromdb)
 {
-    emit preItemRemoved(index);
 
     FetchData *fetchdata = new FetchData();
     if (removefromdb)fetchdata->removeById(mItems[index].id);
+    removeVisible(mItems[index].id);
     mItems.removeAt(index);
 
-    emit postItemRemoved();
+
 }
+
+void ContactList::removeVisible(int index)
+{
+    for(int i = 0; i < mVisibleList.size(); i++){
+        if(mVisibleList[i].id == index){
+            emit preItemRemoved(i);
+            mVisibleList.removeAt(i);
+            emit postItemRemoved();
+            break;
+        }
+    }
+
+}
+
 
 void ContactList::saveChanges(int index, QString m_desc, QString m_mobile, QString m_email, int id)
 {
@@ -113,4 +137,50 @@ void ContactList::saveChanges(int index, QString m_desc, QString m_mobile, QStri
    }
    mItems[index].id = fetchdata->getWantedID();
    emit postItemSave();
+}
+
+void ContactList::searchContacts(QString value)
+{
+    for (int i = 0; i < mItems.length();++i) {
+        //Checks if typed value mathces any items on list
+        //if true
+        if(mItems[i].description.contains(value,Qt::CaseInsensitive)) {
+            bool alreadyInList = false;
+            for(int j = 0; j < mVisibleList.length(); ++j){
+                if(mItems[i].description == mVisibleList[j].description){
+                    ///Already in list
+                    alreadyInList = true;
+                    break;
+                }
+            }
+            if(!alreadyInList){
+                emit preItemAppended();
+
+                mVisibleList.append(mItems[i]);
+
+                emit postItemAppended();
+            }
+        }
+        //if not
+        else {
+            for(int j = 0; j < mVisibleList.size(); ){
+                if(mItems.at(i).description == mVisibleList.at(j).description){
+                //if(mItems[i].description == mVisibleList[j].description){
+                    emit preItemRemoved(j);
+
+                    mVisibleList.removeAt(j);
+
+                    emit postItemRemoved();
+                    break;
+                }else
+                    ++j;
+            }
+        }
+    }
+    for (int i = 0; i < mVisibleList.length();++i) {
+        qDebug()<<mVisibleList[i].description;
+    }
+    qDebug()<<mVisibleList.length();
+    qDebug()<< "-----------------------------";
+
 }

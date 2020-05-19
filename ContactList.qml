@@ -18,11 +18,36 @@ ColumnLayout {
             border.color: "#21be2b"
             radius: 10
         }
+        RowLayout{
+            implicitWidth : parent.width
+            id:searchRow
+            visible: true
+            Image {
+                id: image
+                source: "images/menuicon.png"
+            }
+            Text {
+                id: txtasd
+                text: qsTr("0-")
+            }
+            TextField {
+                id: searchText
+                anchors.right: parent.right
+                text: ""
+                onTextChanged: {
+                    contactList.searchContacts(searchText.text)
+                }
+                Layout.fillWidth: true
+            }
+
+        }
 
         ListView {
+            anchors.top: searchRow.bottom
             id: contactListView
             implicitWidth: parent.width
             implicitHeight: parent.height
+            anchors.bottom: parent.bottom
             clip: true
 
             model: ContactModel {
