@@ -104,8 +104,7 @@ void ContactModel::setList(ContactList *list)
     mVisibleList = list;
 
     if (mVisibleList) {
-        connect(mVisibleList, &ContactList::preItemAppended, this, [=]() {
-            const int index = mVisibleList->visibleItems().size();
+        connect(mVisibleList, &ContactList::preItemAppended, this, [=](int index) {
             beginInsertRows(QModelIndex(), index, index);
         });
         connect(mVisibleList, &ContactList::postItemAppended, this, [=]() {

@@ -19,21 +19,18 @@ ColumnLayout {
             radius: 10
         }
         RowLayout{
-            implicitWidth : parent.width
+            width: parent.width
             id:searchRow
             visible: true
-            Image {
-                id: image
-                source: "images/menuicon.png"
-            }
             Text {
-                id: txtasd
-                text: qsTr("0-")
+                text: qsTr("Search")
             }
             TextField {
                 id: searchText
                 anchors.right: parent.right
+                width: parent.fillWidth
                 text: ""
+                inputMethodHints: Qt.ImhNoPredictiveText
                 onTextChanged: {
                     contactList.searchContacts(searchText.text)
                 }

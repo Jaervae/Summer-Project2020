@@ -62,7 +62,7 @@ void ContactList::getData()
 
 void ContactList::appendItem()
 {
-    emit preItemAppended();
+    emit preItemAppended(mVisibleList.length());
 
     ContactItem item;
 
@@ -154,9 +154,12 @@ void ContactList::searchContacts(QString value)
                 }
             }
             if(!alreadyInList){
-                emit preItemAppended();
+                int index = getAlpapheticOrder(mItems[i].description);
 
-                mVisibleList.append(mItems[i]);
+                emit preItemAppended(index);
+
+                mVisibleList.insert(index, mItems[i]);
+                //mVisibleList.append(mItems[i]);
 
                 emit postItemAppended();
             }
@@ -165,7 +168,6 @@ void ContactList::searchContacts(QString value)
         else {
             for(int j = 0; j < mVisibleList.size(); ){
                 if(mItems.at(i).description == mVisibleList.at(j).description){
-                //if(mItems[i].description == mVisibleList[j].description){
                     emit preItemRemoved(j);
 
                     mVisibleList.removeAt(j);
@@ -183,4 +185,23 @@ void ContactList::searchContacts(QString value)
     qDebug()<<mVisibleList.length();
     qDebug()<< "-----------------------------";
 
+}
+
+int ContactList::getAlpapheticOrder(QString value)
+{
+    int index = mVisibleList.length();
+    bool spotFound = false;
+    for (int i = 0; i < mVisibleList.length(); i++){
+        if(isAlphabeticallyFirst(value, mVisibleList[i].description)){
+            index = i;
+            spotFound = true;
+            break;
+        }
+    }
+    return index;
+}
+
+bool ContactList::isAlphabeticallyFirst(const QString &s1, const QString &s2)
+{
+    return s1.toLower() < s2.toLower();
 }

@@ -26,7 +26,7 @@ public:
     bool setItemAt(int index, const ContactItem &item);
 
 signals:
-    void preItemAppended();
+    void preItemAppended(int index);
     void postItemAppended();
 
     void preItemRemoved(int index);
@@ -49,5 +49,8 @@ public slots:
 private:
     QVector<ContactItem> mItems;
     QVector<ContactItem> mVisibleList;
+
+    int getAlpapheticOrder(QString value);
+    bool isAlphabeticallyFirst(const QString &s1, const QString &s2);
 };
 #endif // CONTACTLIST_H
