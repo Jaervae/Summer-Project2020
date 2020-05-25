@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include <QObject>
 #include <QVector>
+#include <QFile>
 
 struct ContactItem
 {
@@ -46,9 +47,14 @@ public slots:
     void saveChanges(int index, QString m_desc, QString m_mobile, QString m_email, int id);
     void searchContacts(QString value);
 
+    void open();
+    void save();
+
 private:
     QVector<ContactItem> mItems;
     QVector<ContactItem> mVisibleList;
+
+    QString currentFile;
 
     int getAlpapheticOrder(QString value);
     bool isAlphabeticallyFirst(const QString &s1, const QString &s2);

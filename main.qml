@@ -47,10 +47,10 @@ ApplicationWindow {
                     id: menu
                     y: menubutton.height
                     MenuItem {
-                        text: "New..."
+                        text: "Save"
                     }
                     MenuItem {
-                        text: "Open..."
+                        text: "Load"
                     }
                     MenuItem {
                         text: "Settings"

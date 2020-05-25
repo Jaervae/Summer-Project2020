@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
-
+import QtQuick.Controls.Material 2.0
 import Contact 1.0
 
 
@@ -22,12 +22,13 @@ ColumnLayout {
             width: parent.width
             id:searchRow
             visible: true
-            Text {
-                text: qsTr("Search")
-            }
             TextField {
+                Material.accent: Material.color("21be2b",Material.Shade50)
                 id: searchText
-                anchors.right: parent.right
+                anchors.left: searchRow.left
+                anchors.right: btnsa.left
+                anchors.rightMargin: 10
+                anchors.leftMargin: 5
                 width: parent.fillWidth
                 text: ""
                 inputMethodHints: Qt.ImhNoPredictiveText
@@ -35,6 +36,26 @@ ColumnLayout {
                     contactList.searchContacts(searchText.text)
                 }
                 Layout.fillWidth: true
+            }
+            Button {
+                id: btnsa
+                text: qsTr("Search")
+                contentItem: Text {
+                    text: btnsa.text
+                    font: btnsa.font
+                    opacity: enabled ? 1.0 : 0.3
+                    color: btnsa.down ? "#17a81a" : "#21be2b"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                }
+                background: Rectangle {
+                    color: "transparent"
+                    opacity: enabled ? 1 : 0.3
+                    border.color: btnsa.down ? "#17a81a" : "#21be2b"
+                    border.width: 1
+                    radius: 5
+                }
             }
 
         }

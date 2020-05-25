@@ -53,10 +53,14 @@ void ContactList::getData()
         QString mobile = qList[i].getMobile();
         QString email = qList[i].getEmail();
         int id = qList[i].getID();
+
         mItems.append({false, name, mobile, email,id});
         qDebug()<<"Lisätty: " + name;
+
+        int index = getAlpapheticOrder(mItems[i].description);
+
+        mVisibleList.insert(index, mItems[i]);
     }
-    mVisibleList = mItems;
     qDebug()<<"Kaikki lisatty";
 }
 
