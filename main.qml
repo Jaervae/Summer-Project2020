@@ -7,10 +7,11 @@ ApplicationWindow {
     visible: true
     width: 640
     height: 480
-    id:window
+    id:rootWindow
     title: qsTr("Scroll")
 
     header: ToolBar{
+
         id:toolBar
         topPadding: Qt.platform.os === "ios" ? Screen.height - Screen.desktopAvailableHeight : 0
         contentItem: Text {
@@ -36,6 +37,7 @@ ApplicationWindow {
                 onClicked: stack.pop()
             }
             ToolButton {
+
                 anchors.right: parent.right
                 id: menubutton
                 text: qsTr("⋮")
@@ -51,12 +53,15 @@ ApplicationWindow {
                     }
                     MenuItem {
                         text: "Load"
+                        id: loadItem
+                        onLoadClicked: contactListTab.text = "toggle"
+                        signal loadClicked
+                        onClicked: loadItem.loadClicked()
                     }
                     MenuItem {
                         text: "Settings"
-                        onClicked: {
 
-                        }
+
                     }
                     MenuSeparator{}
                     MenuItem {
@@ -93,6 +98,10 @@ ApplicationWindow {
         Item {
             id: contactTab
             ContactList{
+                id: contactListTab
+                function fun(){
+
+                }
             }
         }
         Item {
@@ -102,13 +111,6 @@ ApplicationWindow {
             id: activityTab
         }
     }
-
-
-    /*
-    ContactList{
-        anchors.centerIn: parent
-    }
-    */
 
 
 }

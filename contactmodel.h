@@ -15,7 +15,7 @@ public:
 
     enum {
             NewEntryRole = Qt::UserRole,
-            DescriptionRole,
+            FullnameRole,
             MobileRole,
             EmailRole,
             IDRole

@@ -23,8 +23,6 @@ int main(int argc, char *argv[])
 
     ContactList contactList;
 
-
-
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("contactList"), &contactList);
     const QUrl url(QStringLiteral("qrc:/main.qml"));

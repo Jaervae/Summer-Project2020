@@ -4,6 +4,9 @@
 #include "contactlist.h"
 #include "fetchdata.h"
 #include "contact.h"
+#include <QNetworkReply>
+#include <QtNetwork>
+#include <QNetworkAccessManager>
 
 ContactList::ContactList(QObject *parent) : QObject(parent)
 {
@@ -26,7 +29,7 @@ bool ContactList::setItemAt(int index, const ContactItem &item)
         return false;
 
     const ContactItem &oldItem = items().at(index);
-    if (item.newEntry == oldItem.newEntry && item.description == oldItem.description)
+    if (item.newEntry == oldItem.newEntry && item.fullname == oldItem.fullname)
         return false;
 
     mVisibleList[index] = item;
@@ -57,11 +60,13 @@ void ContactList::getData()
         mItems.append({false, name, mobile, email,id});
         qDebug()<<"Lisätty: " + name;
 
-        int index = getAlpapheticOrder(mItems[i].description);
+        int index = getAlpapheticOrder(mItems[i].fullname);
 
         mVisibleList.insert(index, mItems[i]);
     }
     qDebug()<<"Kaikki lisatty";
+    this->listToJsonArray();
+    loadList();
 }
 
 void ContactList::appendItem()
@@ -115,11 +120,11 @@ void ContactList::removeVisible(int index)
 }
 
 
-void ContactList::saveChanges(int index, QString m_desc, QString m_mobile, QString m_email, int id)
+void ContactList::saveChanges(int index, QString m_fullname, QString m_mobile, QString m_email, int id)
 {
    emit preItemSave();
 
-   QStringList fullname = m_desc.split(' ');
+   QStringList fullname = m_fullname.split(' ');
    QString ln;
    if(fullname.length() > 1){
        ln = fullname.last();
@@ -133,7 +138,7 @@ void ContactList::saveChanges(int index, QString m_desc, QString m_mobile, QStri
    fetchdata->putData(contact, mItems[index].newEntry);
 
    mItems[index].newEntry = false;
-   fetchdata->getNewEntryID(m_desc);
+   fetchdata->getNewEntryID(m_fullname);
    while (fetchdata->getSearchStatus() == false) {
        QTime dieTime= QTime::currentTime().addMSecs(200);
        while (QTime::currentTime() < dieTime)
@@ -148,17 +153,17 @@ void ContactList::searchContacts(QString value)
     for (int i = 0; i < mItems.length();++i) {
         //Checks if typed value mathces any items on list
         //if true
-        if(mItems[i].description.contains(value,Qt::CaseInsensitive)) {
+        if(mItems[i].fullname.contains(value,Qt::CaseInsensitive)) {
             bool alreadyInList = false;
             for(int j = 0; j < mVisibleList.length(); ++j){
-                if(mItems[i].description == mVisibleList[j].description){
+                if(mItems[i].fullname == mVisibleList[j].fullname){
                     ///Already in list
                     alreadyInList = true;
                     break;
                 }
             }
             if(!alreadyInList){
-                int index = getAlpapheticOrder(mItems[i].description);
+                int index = getAlpapheticOrder(mItems[i].fullname);
 
                 emit preItemAppended(index);
 
@@ -171,7 +176,7 @@ void ContactList::searchContacts(QString value)
         //if not
         else {
             for(int j = 0; j < mVisibleList.size(); ){
-                if(mItems.at(i).description == mVisibleList.at(j).description){
+                if(mItems.at(i).fullname == mVisibleList.at(j).fullname){
                     emit preItemRemoved(j);
 
                     mVisibleList.removeAt(j);
@@ -184,21 +189,83 @@ void ContactList::searchContacts(QString value)
         }
     }
     for (int i = 0; i < mVisibleList.length();++i) {
-        qDebug()<<mVisibleList[i].description;
+        qDebug()<<mVisibleList[i].fullname;
     }
     qDebug()<<mVisibleList.length();
     qDebug()<< "-----------------------------";
 
 }
 
+bool ContactList::saveToFile()
+{
+
+
+    return true;
+}
+
+void ContactList::listToJsonArray()
+{
+    QJsonArray array;
+    foreach(const ContactItem contact,mItems){
+        QStringList fullnameAsList = contact.fullname.split(' ');
+        QString ln;
+        if(fullnameAsList.length() > 1){
+            ln = fullnameAsList.last();
+            fullnameAsList.removeLast();
+        } else ln = "";
+        QString fn = fullnameAsList.join(' ');
+
+        QJsonObject contactObj;
+        contactObj["id"] = contact.id;
+        contactObj["fistname"] = fn;
+        contactObj["lastname"] = ln;
+        contactObj["mobile"] = contact.mobile;
+        contactObj["email"] = contact.email;
+       array.append(contactObj);
+    }
+    QJsonObject object;
+    object["Contacts"] = array;
+    QJsonDocument saveDoc(object);
+    //qDebug()<<array;
+
+    QFile saveFile(QStringLiteral("save.json"));
+
+    if (!saveFile.open(QIODevice::WriteOnly)) {
+        qWarning("Couldn't open save file.");
+
+    }
+    saveFile.write(QJsonDocument(array).toJson());
+
+    saveToFile();
+}
+
+bool ContactList::loadList()
+{
+    QFile file(QStringLiteral("save.json"));
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning("Couldn't open save file.");
+        return false;
+    }
+    QByteArray jsonData = file.readAll();
+    file.close();
+
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(jsonData);
+    QJsonArray jsonArray = jsonResponse.array();
+    qDebug()<<jsonArray;
+    /*QJsonDocument document = QJsonDocument::fromJson(jsonData);
+    QJsonObject object = document.object();*/
+    return true;
+}
+
+
+
 int ContactList::getAlpapheticOrder(QString value)
 {
     int index = mVisibleList.length();
-    bool spotFound = false;
     for (int i = 0; i < mVisibleList.length(); i++){
-        if(isAlphabeticallyFirst(value, mVisibleList[i].description)){
+        if(isAlphabeticallyFirst(value, mVisibleList[i].fullname)){
             index = i;
-            spotFound = true;
             break;
         }
     }

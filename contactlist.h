@@ -1,15 +1,18 @@
 #ifndef CONTACTLIST_H
 #define CONTACTLIST_H
 
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
 #include <QAbstractListModel>
 #include <QObject>
 #include <QVector>
 #include <QFile>
+#include <QFileDialog>
 
 struct ContactItem
 {
     bool newEntry;
-    QString description;
+    QString fullname;
     QString mobile;
     QString email;
     int id;
@@ -18,6 +21,7 @@ struct ContactItem
 class ContactList : public QObject
 {
     Q_OBJECT
+
 public:
     explicit ContactList(QObject *parent = nullptr);
 
@@ -44,17 +48,18 @@ public slots:
     void removeCompletedItems();
     void removeOne(int index, bool removefromdb);
     void removeVisible(int index);
-    void saveChanges(int index, QString m_desc, QString m_mobile, QString m_email, int id);
+    void saveChanges(int index, QString m_fullname, QString m_mobile, QString m_email, int id);
     void searchContacts(QString value);
 
-    void open();
-    void save();
+    void listToJsonArray();
+    bool saveToFile();
+    bool loadList();
 
 private:
     QVector<ContactItem> mItems;
     QVector<ContactItem> mVisibleList;
 
-    QString currentFile;
+    QString filename;
 
     int getAlpapheticOrder(QString value);
     bool isAlphabeticallyFirst(const QString &s1, const QString &s2);

@@ -5,11 +5,10 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Controls.Material 2.0
 import Contact 1.0
 
-
-
 ColumnLayout {
     width: parent.width
     height: parent.height
+    property alias text: searchText.text
     Frame {
         Layout.fillWidth: true
         Layout.fillHeight: true
@@ -80,8 +79,8 @@ ColumnLayout {
                     RowLayout{
                         TextField {
                             id: nametxt
-                            text: model.description
-                            onEditingFinished: model.description = text
+                            text: model.fullname
+                            onEditingFinished: model.fullname = text
                             Layout.fillWidth: true
                         }
                     }
@@ -161,7 +160,7 @@ ColumnLayout {
                                         anchors.horizontalCenter: parent.horizontalCenter
 
                                         Text {
-                                            text: "Do you want to delete " + model.description
+                                            text: "Do you want to delete " + model.fullname
                                             color: "#21be2b"
                                         }
                                     }

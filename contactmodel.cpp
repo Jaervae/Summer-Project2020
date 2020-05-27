@@ -26,8 +26,8 @@ QVariant ContactModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case NewEntryRole:
         return QVariant(item.newEntry);
-    case DescriptionRole:
-        return QVariant(item.description);
+    case FullnameRole:
+        return QVariant(item.fullname);
     case MobileRole:
         return QVariant(item.mobile);
     case EmailRole:
@@ -49,8 +49,8 @@ bool ContactModel::setData(const QModelIndex &index, const QVariant &value, int 
     case NewEntryRole:
         item.newEntry = value.toBool();
         break;
-    case DescriptionRole:
-        item.description = value.toString();
+    case FullnameRole:
+        item.fullname = value.toString();
         break;
     case MobileRole:
         item.mobile = value.toString();
@@ -82,7 +82,7 @@ QHash<int, QByteArray> ContactModel::roleNames() const
 {
     QHash<int, QByteArray> names;
     names[NewEntryRole] = "newEntry";
-    names[DescriptionRole] = "description";
+    names[FullnameRole] = "fullname";
     names[MobileRole] = "mobile";
     names[EmailRole] = "email";
     names[IDRole] = "id";
