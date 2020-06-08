@@ -47,12 +47,10 @@ public slots:
     void appendItem();
     void removeCompletedItems();
     void removeOne(int index, bool removefromdb);
-    void removeVisible(int index);
     void saveChanges(int index, QString m_fullname, QString m_mobile, QString m_email, int id);
     void searchContacts(QString value);
 
-    void listToJsonArray();
-    bool saveToFile();
+    void saveToFile();
     bool loadList();
 
 private:

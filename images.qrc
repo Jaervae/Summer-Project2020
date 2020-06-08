@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/back1x.png</file>
+        <file>images/back2x.png</file>
+        <file>images/eventindicator.png</file>
+        <file>images/menu1x.png</file>
+        <file>images/menu2x.png</file>
+    </qresource>
+</RCC>

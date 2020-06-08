@@ -10,6 +10,7 @@
 #include "fetchdata.h"
 #include "contactlist.h"
 #include "contactmodel.h"
+#include "sqleventmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,6 +19,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<ContactModel>("Contact", 1, 0, "ContactModel");
+    qmlRegisterType<SqlEventModel>("SqlEvent", 1, 0, "SqlEventModel");
     qmlRegisterUncreatableType<ContactList>("Contact", 1, 0, "ContactList",
         QStringLiteral("ContactList should not be created in QML"));
 

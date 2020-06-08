@@ -8,7 +8,16 @@ import Contact 1.0
 ColumnLayout {
     width: parent.width
     height: parent.height
-    property alias text: searchText.text
+    id: contactlistLayout
+
+    function saveSlot(){
+        contactList.saveToFile()
+    }
+
+    function loadSlot(){
+        contactList.loadList()
+    }
+
     Frame {
         Layout.fillWidth: true
         Layout.fillHeight: true
@@ -93,6 +102,7 @@ ColumnLayout {
                                         openFrame.start()
 
                         }
+
                     }
                     ColumnLayout{
                         width: parent.width

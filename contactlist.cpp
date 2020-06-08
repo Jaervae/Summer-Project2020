@@ -65,8 +65,7 @@ void ContactList::getData()
         mVisibleList.insert(index, mItems[i]);
     }
     qDebug()<<"Kaikki lisatty";
-    this->listToJsonArray();
-    loadList();
+
 }
 
 void ContactList::appendItem()
@@ -97,31 +96,36 @@ void ContactList::removeCompletedItems()
 
 void ContactList::removeOne(int index, bool removefromdb)
 {
+    int id = mVisibleList[index].id;
 
-    FetchData *fetchdata = new FetchData();
-    if (removefromdb)fetchdata->removeById(mItems[index].id);
-    removeVisible(mItems[index].id);
-    mItems.removeAt(index);
+    emit preItemRemoved(index);
+    mVisibleList.removeAt(index);
+    emit postItemRemoved();
 
-
-}
-
-void ContactList::removeVisible(int index)
-{
-    for(int i = 0; i < mVisibleList.size(); i++){
-        if(mVisibleList[i].id == index){
-            emit preItemRemoved(i);
-            mVisibleList.removeAt(i);
-            emit postItemRemoved();
+    for(int i = 0; i < mItems.size(); i++){
+        if(mItems[i].id == id){
+            FetchData *fetchdata = new FetchData();
+            if (removefromdb)fetchdata->removeById(mItems[i].id);
+            mItems.removeAt(i);
             break;
         }
     }
-
 }
+
 
 
 void ContactList::saveChanges(int index, QString m_fullname, QString m_mobile, QString m_email, int id)
 {
+   int mVisibleListId = index;
+   int mItemListId = 0;
+
+   for (int i = 0; i < mItems.length(); i++){
+       if(mItems[i].id == id){
+           mItemListId = i;
+           break;
+       }
+   }
+
    emit preItemSave();
 
    QStringList fullname = m_fullname.split(' ');
@@ -144,6 +148,7 @@ void ContactList::saveChanges(int index, QString m_fullname, QString m_mobile, Q
        while (QTime::currentTime() < dieTime)
            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
    }
+   QStringList itemObj = { fn, ln , m_mobile, m_email };
    mItems[index].id = fetchdata->getWantedID();
    emit postItemSave();
 }
@@ -196,14 +201,7 @@ void ContactList::searchContacts(QString value)
 
 }
 
-bool ContactList::saveToFile()
-{
-
-
-    return true;
-}
-
-void ContactList::listToJsonArray()
+void ContactList::saveToFile()
 {
     QJsonArray array;
     foreach(const ContactItem contact,mItems){
@@ -236,7 +234,7 @@ void ContactList::listToJsonArray()
     }
     saveFile.write(QJsonDocument(array).toJson());
 
-    saveToFile();
+    qDebug()<<"done saving";
 }
 
 bool ContactList::loadList()
@@ -252,9 +250,7 @@ bool ContactList::loadList()
 
     QJsonDocument jsonResponse = QJsonDocument::fromJson(jsonData);
     QJsonArray jsonArray = jsonResponse.array();
-    qDebug()<<jsonArray;
-    /*QJsonDocument document = QJsonDocument::fromJson(jsonData);
-    QJsonObject object = document.object();*/
+
     return true;
 }
 

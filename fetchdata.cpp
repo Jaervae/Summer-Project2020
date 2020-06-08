@@ -64,6 +64,7 @@ void FetchData::removeById(int id)
     qDebug() << url;
     request.setUrl(QUrl(url));
 
+
     manager->deleteResource(request);
 
 }
@@ -147,6 +148,7 @@ void FetchData::getnewest(QNetworkReply *reply)
 
     QJsonDocument jsonResponse = QJsonDocument::fromJson(answer.toUtf8());
     QJsonArray jsonArray = jsonResponse.array();
+    bool found = false;
     foreach (const QJsonValue & v, jsonArray)
     {
         QJsonObject obj = v.toObject();
@@ -156,11 +158,14 @@ void FetchData::getnewest(QNetworkReply *reply)
             QString currentName = obj.value("firstname").toString() + " " + obj.value("lastname").toString();
             if(currentName == this->wantedItem){
                 this->wantedID = id.toInt();
+                qDebug()<<"found";
+                found = true;
                 break;
             }
         }
 
     }
+    if(!found) getNewEntryID(this->wantedItem);
     this->dataSearchDone = true;
 }
 

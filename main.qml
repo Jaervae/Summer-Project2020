@@ -9,9 +9,10 @@ ApplicationWindow {
     height: 480
     id:rootWindow
     title: qsTr("Scroll")
+    signal saveSignal()
+    signal loadSignal()
 
     header: ToolBar{
-
         id:toolBar
         topPadding: Qt.platform.os === "ios" ? Screen.height - Screen.desktopAvailableHeight : 0
         contentItem: Text {
@@ -31,16 +32,30 @@ ApplicationWindow {
         }
         RowLayout{
             anchors.fill: parent
+
             ToolButton {
+                hoverEnabled: false
                 anchors.left: parent.left
-                text: qsTr("‹")
+                contentItem: Image {
+                    horizontalAlignment: Image.AlignHCenter
+                    verticalAlignment: Image.AlignVCenter
+                    id: backimage
+                    source: "images/back2x.png"
+                }
                 onClicked: stack.pop()
             }
-            ToolButton {
 
+            ToolButton {
+                hoverEnabled: false
                 anchors.right: parent.right
                 id: menubutton
-                text: qsTr("⋮")
+                contentItem: Image {
+                    horizontalAlignment: Image.AlignHCenter
+                    verticalAlignment: Image.AlignVCenter
+                    id: menuimage
+                    source: "images/menu2x.png"
+                }
+
                 onClicked: {
                     if(menu.visible) menu.close()
                     else menu.open()
@@ -50,18 +65,16 @@ ApplicationWindow {
                     y: menubutton.height
                     MenuItem {
                         text: "Save"
+                        id: saveItem
+                        onClicked: rootWindow.saveSignal()
                     }
                     MenuItem {
                         text: "Load"
                         id: loadItem
-                        onLoadClicked: contactListTab.text = "toggle"
-                        signal loadClicked
-                        onClicked: loadItem.loadClicked()
+                        onClicked: rootWindow.loadSignal()
                     }
                     MenuItem {
                         text: "Settings"
-
-
                     }
                     MenuSeparator{}
                     MenuItem {
@@ -99,13 +112,21 @@ ApplicationWindow {
             id: contactTab
             ContactList{
                 id: contactListTab
-                function fun(){
-
+                Component.onCompleted: {
+                    rootWindow.saveSignal.connect(contactListTab.saveSlot)
+                    rootWindow.loadSignal.connect(contactListTab.loadSlot)
                 }
+
+
             }
+
         }
+
         Item {
             id: discoverTab
+           CalendarView{
+               id: discoverListTab
+           }
         }
         Item {
             id: activityTab

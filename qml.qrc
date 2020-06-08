@@ -5,5 +5,6 @@
         <file>qtquickcontrols2.conf</file>
         <file>Settings.qml</file>
         <file>SettingsForm.ui.qml</file>
+        <file>CalendarView.qml</file>
     </qresource>
 </RCC>

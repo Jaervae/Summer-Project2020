@@ -2,6 +2,7 @@ QT += quick
 QT += network
 QT += core
 QT += widgets
+QT += qml quick sql
 
 
 CONFIG += c++11
@@ -20,11 +21,14 @@ SOURCES += \
         contact.cpp \
         contactlist.cpp \
         contactmodel.cpp \
+        event.cpp \
         fetchdata.cpp \
         main.cpp \
-        settings.cpp
+        settings.cpp \
+        sqleventmodel.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += qml.qrc \
+    images.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -42,8 +46,9 @@ HEADERS += \
     contact.h \
     contactlist.h \
     contactmodel.h \
+    event.h \
     fetchdata.h \
-    settings.h
+    settings.h \
+    sqleventmodel.h
 
 DISTFILES += \
-    images/menuicon.png
