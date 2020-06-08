@@ -7,10 +7,17 @@
 #include <QNetworkReply>
 #include <QtNetwork>
 #include <QNetworkAccessManager>
+#include <QDateTime>
 
 SqlEventModel::SqlEventModel()
 {
+    loadEvents();
     createConnection();
+}
+
+SqlEventModel::~SqlEventModel()
+{
+
 }
 
 QList<QObject*> SqlEventModel::eventsForDate(const QDate &date)
@@ -54,27 +61,57 @@ void SqlEventModel::createConnection()
         return;
     }
 
+            /*
+            Event *event = new Event(this);
+            event->setName("Conference");
+
+            QDateTime startDate;
+            startDate.setDate(QDate(2014,1,24));
+            startDate.setTime(QTime(0, 0).addSecs(32400));
+            event->setStartDate(startDate);
+
+            QDateTime endDate;
+            endDate.setDate(QDate(2014,1,28));
+            endDate.setTime(QTime(0, 0).addSecs(61200));
+            event->setEndDate(endDate);
+
+            eventList.append(event);
+            saveChanges();
+            */
 
     QSqlQuery query;
-
     // We store the time as seconds because it's easier to query.
     query.exec("create table Event (name TEXT, startDate DATE, startTime INT, endDate DATE, endTime INT)");
-    /*query.prepare("create table Event (name, startDate, startTime, endDate, endTime)"
-                                "VALUES (:name, :startDate, :startTime, :endDate, :endTime)");
-
+    query.prepare("INSERT INTO Event (name, startDate, startTime, endDate, endTime) "
+                  "VALUES (:name, :startDate, :startTime, :endDate, :endTime)");
     for (int i = 0; i < eventList.length(); i++){
+        qDebug()<< i;
+        qDebug()<< eventList[i]->startDate().date();
+        qDebug()<< (eventList[i]->startDate().time().msecsSinceStartOfDay() / 1000 );
         query.bindValue(":name", eventList[i]->name());
-        query.bindValue(":startDate", eventList[i]->startDate().Da);
-        query.bindValue(":startTime", eventList[i]->name());
-        query.bindValue(":endDate", eventList[i]->name());
-        query.bindValue(":endTime", eventList[i]->name());
+        query.bindValue(":startDate", eventList[i]->startDate().date());
+        query.bindValue(":startTime", (eventList[i]->startDate().time().msecsSinceStartOfDay() / 1000 ));
+        query.bindValue(":endDate", eventList[i]->endDate().date());
+        query.bindValue(":endTime", (eventList[i]->endDate().time().msecsSinceStartOfDay() / 1000 ));
         query.exec();
-    }*/
+    }
 
-    query.exec("insert into Event values('Grocery shopping', '2014-01-01', 36000, '2014-01-01', 39600)");
+    /*
+    query.prepare("INSERT INTO Event (name, startDate, startTime, endDate, endTime) "
+                  "VALUES (:name, :startDate, :startTime, :endDate, :endTime)");
+    query.bindValue(":name", "Ice skating");
+    query.bindValue(":startDate", "2014-01-01");
+    query.bindValue(":startTime", 57600);
+    query.bindValue(":endDate", "2014-01-01");
+    query.bindValue(":endTime", 61200);
+    query.exec();
+
+    //query.exec("insert into Event values('Grocery shopping', '2014-01-01', 36000, '2014-01-01', 39600)");
     query.exec("insert into Event values('Ice skating', '2014-01-01', 57600, '2014-01-01', 61200)");
     query.exec("insert into Event values('Doctor''s appointment', '2014-01-15', 57600, '2014-01-15', 63000)");
     query.exec("insert into Event values('Conference', '2014-01-24', 32400, '2014-01-28', 61200)");
+    */
+
 
     return;
 }
@@ -83,16 +120,18 @@ bool SqlEventModel::saveChanges()
 {
     QJsonArray array;
     for (int i = 0; i < eventList.length(); i++){
-        QString startDate = eventList[i]->startDate().date().toString();
-        int startTime = eventList[i]->startDate().time().second();
-        QString endDate = eventList[i]->endDate().date().toString();
-        int endTime = eventList[i]->endDate().time().second();
+        QString startDate = QStringLiteral("%1-%2-%3").arg(eventList[i]->startDate().date().year())
+                .arg(eventList[i]->startDate().date().month())
+                .arg(eventList[i]->startDate().date().day());
+        QString endDate = QStringLiteral("%1-%2-%3").arg(eventList[i]->endDate().date().year())
+                .arg(eventList[i]->endDate().date().month())
+                .arg(eventList[i]->endDate().date().day());
         QJsonObject eventObj;
         eventObj["name"] = eventList[i]->name();
         eventObj["start-date"] = startDate;
-        eventObj["start-time"] = startTime;
-        eventObj["end-date"] = endDate;
-        eventObj["end-time"] = endTime;
+        eventObj["start-time"] = (eventList[i]->startDate().time().msecsSinceStartOfDay() / 1000 );
+        eventObj["end-date"] =  endDate;
+        eventObj["end-time"] = (eventList[i]->endDate().time().msecsSinceStartOfDay() / 1000 );
         array.append(eventObj);
     }
     QJsonObject object;
@@ -105,6 +144,7 @@ bool SqlEventModel::saveChanges()
     if (!saveFile.open(QIODevice::WriteOnly)) {
         qWarning("Couldn't open save file.");
         return false;
+
     }
     saveFile.write(QJsonDocument(array).toJson());
 
@@ -115,7 +155,7 @@ bool SqlEventModel::saveChanges()
 
 bool SqlEventModel::loadEvents()
 {
-    /*
+
     QFile file(QStringLiteral("events.json"));
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -129,6 +169,29 @@ bool SqlEventModel::loadEvents()
     QJsonArray jsonArray = jsonResponse.array();
 
     qDebug()<< jsonArray;
-    */
+
+    foreach (const QJsonValue & v, jsonArray){
+        Event *event = new Event(this);
+        event->setName(v.toObject().value("name").toString());
+
+        QString str = v.toObject().value("start-date").toString();
+        QStringList strList = str.split("-");
+        QDateTime startDate;
+        qDebug()<<strList;
+        startDate.setDate(QDate(strList[0].toInt(),strList[1].toInt(),strList[2].toInt()));
+        startDate.setTime(QTime(0, 0).addSecs(v.toObject().value("start-time").toInt()));
+        event->setStartDate(startDate);
+        qDebug()<<startDate.date();
+
+        str = v.toObject().value("end-date").toString();
+        strList = str.split("-");
+        QDateTime endDate;
+        endDate.setDate(QDate(strList[0].toInt(),strList[1].toInt(),strList[2].toInt()));
+        endDate.setTime(QTime(0, 0).addSecs(v.toObject().value("start-time").toInt()));
+        event->setEndDate(endDate);
+
+        eventList.append(event);
+    }
+
     return true;
 }

@@ -1,6 +1,7 @@
 QT += quick
 QT += network
 QT += core
+QT += quickcontrols2
 QT += widgets
 QT += qml quick sql
 

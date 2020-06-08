@@ -2,6 +2,7 @@ import QtQuick 2.2
 import QtQuick.Controls 1.2
 import QtQuick.Controls.Private 1.0
 import QtQuick.Controls.Styles 1.1
+import QtQuick.Dialogs 1.2
 import SqlEvent 1.0
 Item {
     width: parent.width
@@ -113,12 +114,15 @@ Item {
                 width: (parent.width > parent.height ? parent.width * 0.4 - parent.spacing : parent.width)
                 height: (parent.height > parent.width ? parent.height * 0.4 - parent.spacing : parent.height)
                 border.color: Qt.darker(color, 1.2)
+                id: eventBox
 
                 ListView {
                     id: eventsListView
                     spacing: 4
                     clip: true
                     header: eventListHeader
+                    anchors.bottom: newButton.top
+                    height: parent.height - newButton.height
                     anchors.fill: parent
                     anchors.margins: 10
                     model: eventModel.eventsForDate(calendar.selectedDate)
@@ -164,6 +168,51 @@ Item {
                             }
                         }
                     }
+                }
+
+                Button{
+                    id: newButton
+                    anchors.bottom: eventBox.bottom
+                    anchors.bottomMargin: 15
+                    anchors.leftMargin: 15
+                    anchors.rightMargin: 15
+                    anchors.left: eventBox.left
+                    anchors.right: eventBox.right
+                    text: "Add new"
+                    onClicked: dialog.visible = true
+                    style: ButtonStyle{
+                        background: Rectangle {
+                            implicitWidth: 100
+                            implicitHeight: 25
+                            border.width: control.activeFocus ? 2 : 1
+                            border.color: "#888"
+                            radius: 4
+                            gradient: Gradient {
+                                GradientStop { position: 0 ; color: control.pressed ? "#ccc" : "#eee" }
+                                GradientStop { position: 1 ; color: control.pressed ? "#aaa" : "#ccc" }
+                            }
+                        }
+                        label: Text {
+                            text: newButton.text
+                            font: newButton.font
+                            opacity: enabled ? 1.0 : 0.3
+                            color: "#444"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                }
+                Dialog {
+                    visible: false
+                    id:dialog
+                    title: "Add new event"
+                    Text {
+                        id: eventStartDate
+                        text: qsTr("text")
+                    }
+
                 }
             }
         }

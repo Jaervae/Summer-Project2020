@@ -48,3 +48,29 @@ void Event::setEndDate(const QDateTime &endDate)
         emit endDateChanged(mEndDate);
     }
 }
+
+int Event::startTime() const
+{
+    return mStartTime;
+}
+
+void Event::setStartTime(const int &startTime)
+{
+    if (startTime != mStartTime){
+        mStartTime = startTime;
+        emit startTimeChanged(mStartTime);
+    }
+}
+
+int Event::endTime() const
+{
+    return mEndTime;
+}
+
+void Event::setEndTime(const int &endTime)
+{
+    if (endTime != mEndTime){
+        mEndTime = endTime;
+        emit endTimeChanged(mEndTime);
+    }
+}

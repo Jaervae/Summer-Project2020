@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QObject>
+#include <QDateTime>
 
 #include "event.h"
 
@@ -12,6 +13,7 @@ class SqlEventModel : public QObject
 
 public:
     SqlEventModel();
+    ~SqlEventModel();
 
     Q_INVOKABLE QList<QObject*> eventsForDate(const QDate &date);
 
