@@ -18,7 +18,6 @@ class Event : public QObject
 
 public:
     explicit Event(QObject *parent = 0);
-    Event();
 
     QString name() const;
     void setName(const QString &name);

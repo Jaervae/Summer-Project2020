@@ -24,9 +24,11 @@ int main(int argc, char *argv[])
         QStringLiteral("ContactList should not be created in QML"));
 
     ContactList contactList;
+    SqlEventModel sqlEventModel;
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("contactList"), &contactList);
+    engine.rootContext()->setContextProperty(QStringLiteral("sqleventlist"), &sqlEventModel);
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {

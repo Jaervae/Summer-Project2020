@@ -5,11 +5,6 @@ Event::Event(QObject *parent) :
 {
 }
 
-Event::Event()
-{
-
-}
-
 QString Event::name() const
 {
     return mName;

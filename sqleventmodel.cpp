@@ -48,6 +48,40 @@ QList<QObject*> SqlEventModel::eventsForDate(const QDate &date)
     return events;
 }
 
+void SqlEventModel::newEvent(QString startDate, QString startTime, QString endDate, QString endTime)
+{
+    Event *event = new Event(this);
+
+    event->setName("new event");
+
+    QStringList dateList = startDate.split("-");
+    QStringList timeList = startTime.split(":");
+    int seconds = (QTime(timeList[0].toInt(),timeList[1].toInt()).msecsSinceStartOfDay() / 1000);
+
+    QDateTime mStartDate;
+    mStartDate.setDate(QDate(dateList[2].toInt(),dateList[1].toInt(),dateList[0].toInt()));
+    mStartDate.setTime(QTime(0, 0).addSecs(seconds));
+    event->setStartDate(mStartDate);
+    qDebug()<<mStartDate;
+
+    dateList = endDate.split("-");
+    timeList = endTime.split(":");
+    seconds = (QTime(timeList[0].toInt(),timeList[1].toInt()).msecsSinceStartOfDay() / 1000);
+
+    QDateTime mEndDate;
+    mEndDate.setDate(QDate(dateList[2].toInt(),dateList[1].toInt(),dateList[0].toInt()));
+    mEndDate.setTime(QTime(0, 0).addSecs(seconds));
+    event->setEndDate(mEndDate);
+    qDebug()<<mEndDate;
+
+    eventList.append(event);
+    qDebug()<<"New event added";
+
+    saveChanges();
+    emit dataChaged();
+    createConnection();
+}
+
 /*
     Defines a helper function to open a connection to an
     in-memory SQLITE database and to create a test table.

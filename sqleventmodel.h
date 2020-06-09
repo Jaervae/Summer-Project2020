@@ -17,11 +17,16 @@ public:
 
     Q_INVOKABLE QList<QObject*> eventsForDate(const QDate &date);
 
+
+public slots:
+    void newEvent(QString startDate, QString startTime, QString endDate, QString endTime);
+
 private:
     void createConnection();
 
     bool saveChanges();
     bool loadEvents();
+
 
     QVector<Event*> eventList;
 
