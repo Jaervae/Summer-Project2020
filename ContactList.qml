@@ -92,18 +92,25 @@ ColumnLayout {
                             onEditingFinished: model.fullname = text
                             Layout.fillWidth: true
                         }
-                    }
-                    MouseArea{
-                        id: mousearea
-                        anchors.fill: parent
-                        onClicked: {
-                            expandable_box.visible == true ?
-                                        closeFrame.start() :
-                                        openFrame.start()
+                        Rectangle{
+                            id: idRec
+                            width: parent.width
+                            height: parent.height
+                            color: "transparent"
+                            MouseArea{
+                                id: mousearea
+                                anchors.fill: parent
+                                onClicked: {
+                                    expandable_box.visible == true ?
+                                                closeFrame.start() :
+                                                openFrame.start()
+                                }
 
+                            }
                         }
 
                     }
+
                     ColumnLayout{
                         width: parent.width
                         id: expandable_box
@@ -121,14 +128,21 @@ ColumnLayout {
                                 onEditingFinished: model.email = text
                                 Layout.fillWidth: true
                             }
-                        }
-                        MouseArea{
-                            id: mousearea2
-                            anchors.fill: parent
-                            onClicked: {
-                                expandable_box.visible == true ?
-                                            closeFrame.start() :
-                                            openFrame.start()
+                            Rectangle{
+                                id: idRec2
+                                width: parent.width
+                                height: parent.height
+                                color: "transparent"
+                                MouseArea{
+                                    id: mousearea2
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        expandable_box.visible == true ?
+                                                    closeFrame.start() :
+                                                    openFrame.start()
+                                    }
+
+                                }
                             }
                         }
                         PropertyAnimation{
@@ -339,5 +353,4 @@ ColumnLayout {
     }
 
 }
-
 

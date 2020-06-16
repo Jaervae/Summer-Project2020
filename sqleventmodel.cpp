@@ -73,12 +73,12 @@ void SqlEventModel::newEvent(QString startDate, QString startTime, QString endDa
     mEndDate.setTime(QTime(0, 0).addSecs(seconds));
     event->setEndDate(mEndDate);
     qDebug()<<mEndDate;
-
+    event->setDataId(eventList.size());
     eventList.append(event);
     qDebug()<<"New event added";
+    event->nameChanged(event->name());
 
     saveChanges();
-    emit dataChaged();
     createConnection();
 }
 
@@ -131,16 +131,7 @@ void SqlEventModel::createConnection()
     }
 
     /*
-    query.prepare("INSERT INTO Event (name, startDate, startTime, endDate, endTime) "
-                  "VALUES (:name, :startDate, :startTime, :endDate, :endTime)");
-    query.bindValue(":name", "Ice skating");
-    query.bindValue(":startDate", "2014-01-01");
-    query.bindValue(":startTime", 57600);
-    query.bindValue(":endDate", "2014-01-01");
-    query.bindValue(":endTime", 61200);
-    query.exec();
-
-    //query.exec("insert into Event values('Grocery shopping', '2014-01-01', 36000, '2014-01-01', 39600)");
+    query.exec("insert into Event values('Grocery shopping', '2014-01-01', 36000, '2014-01-01', 39600)");
     query.exec("insert into Event values('Ice skating', '2014-01-01', 57600, '2014-01-01', 61200)");
     query.exec("insert into Event values('Doctor''s appointment', '2014-01-15', 57600, '2014-01-15', 63000)");
     query.exec("insert into Event values('Conference', '2014-01-24', 32400, '2014-01-28', 61200)");
@@ -223,7 +214,8 @@ bool SqlEventModel::loadEvents()
         endDate.setDate(QDate(strList[0].toInt(),strList[1].toInt(),strList[2].toInt()));
         endDate.setTime(QTime(0, 0).addSecs(v.toObject().value("start-time").toInt()));
         event->setEndDate(endDate);
-
+        qDebug()<< eventList.length();
+        event->setDataId(eventList.length());
         eventList.append(event);
     }
 

@@ -162,12 +162,42 @@ Item {
                                 wrapMode: Text.Wrap
                                 text: modelData.name
                             }
+
                             Label {
                                 id: timeLabel
                                 width: parent.width
                                 wrapMode: Text.Wrap
-                                text: modelData.startDate.toLocaleTimeString(calendar.locale, Locale.ShortFormat)
+                                text: modelData.startDate.toLocaleTimeString(calendar.locale, Locale.ShortFormat) + " - " +
+                                      modelData.endDate.toLocaleTimeString(calendar.locale, Locale.ShortFormat)
                                 color: "#aaa"
+                            }
+                        }
+
+                        Button {
+                            text: qsTr("X")
+                            id: deleteButton
+                            anchors.right: parent.right
+
+                            onClicked: {
+                                console.log("Delete " + modelData.dataId + " " + modelData.name)
+                            }
+                            style: ButtonStyle{
+                                background: Rectangle {
+                                    color: "transparent"
+                                    opacity: enabled ? 1 : 0.3
+                                    border.color: "red"
+                                    border.width: 1
+                                    radius: 10
+                                }
+                                label: Text {
+                                    text: deleteButton.text
+                                    //font: btn2.font
+                                    opacity: enabled ? 1.0 : 0.3
+                                    color: "red"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    elide: Text.ElideRight
+                                }
                             }
                         }
                     }
@@ -197,7 +227,7 @@ Item {
                         }
                         label: Text {
                             text: newButton.text
-                            font: newButton.font
+                            //font: newButton.font
                             opacity: enabled ? 1.0 : 0.3
                             color: "#444"
                             horizontalAlignment: Text.AlignHCenter
@@ -339,7 +369,7 @@ Item {
                                                 }
                                                 label: Text {
                                                     text: btn1.text
-                                                    font: btn1.font
+                                                    //font: btn1.font
                                                     opacity: enabled ? 1.0 : 0.3
                                                     color: btn1.down ? "#17a81a" : "#21be2b"
                                                     horizontalAlignment: Text.AlignHCenter
@@ -358,6 +388,7 @@ Item {
                                                                        endDateTXT.text,
                                                                        endTimeTXT.text);
                                                 dialog.close()
+                                                calendar.update();
                                             }
                                             style: ButtonStyle{
                                                 background: Rectangle {
@@ -369,7 +400,7 @@ Item {
                                                 }
                                                 label: Text {
                                                     text: btn2.text
-                                                    font: btn2.font
+                                                    //font: btn2.font
                                                     opacity: enabled ? 1.0 : 0.3
                                                     color: btn2.down ? "#17a81a" : "#21be2b"
                                                     horizontalAlignment: Text.AlignHCenter

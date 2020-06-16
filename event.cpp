@@ -69,3 +69,16 @@ void Event::setEndTime(const int &endTime)
         emit endTimeChanged(mEndTime);
     }
 }
+
+int Event::dataId() const
+{
+    return mDataId;
+}
+
+void Event::setDataId(const int &dataId)
+{
+    if (dataId != mDataId){
+        mDataId = dataId;
+        emit dataIdChanged(mDataId);
+    }
+}

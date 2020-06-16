@@ -8,15 +8,24 @@ ApplicationWindow {
     width: 640
     height: 480
     id:rootWindow
-    title: qsTr("Scroll")
+    title: qsTr("Utility app")
     signal saveSignal()
     signal loadSignal()
+
+    Loader {
+      // position the Loader in the center
+      // of the parent
+      id: loader
+      anchors.fill: parent
+      sourceComponent: mainScreenArea
+    }
+
 
     header: ToolBar{
         id:toolBar
         topPadding: Qt.platform.os === "ios" ? Screen.height - Screen.desktopAvailableHeight : 0
         contentItem: Text {
-            text: "Contactlist"
+            text: "Utility App"
             font.pointSize: 22
             opacity: enabled ? 1.0 : 0.3
             color: "#21be2b"
@@ -42,8 +51,14 @@ ApplicationWindow {
                     id: backimage
                     source: "images/back2x.png"
                 }
-                onClicked: stack.pop()
+                onClicked: {
+                    loader.active = false
+                    rootStackLayout.visible = true
+                }
+
+                //onClicked: stack.pop()
             }
+
 
             ToolButton {
                 hoverEnabled: false
@@ -75,6 +90,11 @@ ApplicationWindow {
                     }
                     MenuItem {
                         text: "Settings"
+                        onClicked: {
+                            loader.active = true
+                            loader.source = "Settings.qml"
+                            rootStackLayout.visible = false
+                        }
                     }
                     MenuSeparator{}
                     MenuItem {
@@ -96,43 +116,51 @@ ApplicationWindow {
 
         }
         TabButton {
-            text: qsTr("Discover")
+            text: qsTr("Calendar")
         }
         TabButton {
             text: qsTr("Activity")
         }
     }
 
-    StackLayout {
+    Rectangle{
+        id: mainScreenArea
         width: parent.width
-        height: parent.height
+        height: (parent.height - toolBar.height - bar.height)
         anchors.bottom: bar.top
-        currentIndex: bar.currentIndex
-        Item {
-            id: contactTab
-            ContactList{
-                id: contactListTab
-                Component.onCompleted: {
-                    rootWindow.saveSignal.connect(contactListTab.saveSlot)
-                    rootWindow.loadSignal.connect(contactListTab.loadSlot)
-                }
+        anchors.top: toolBar.bottom
+        color: "transparent"
+        StackLayout {
+            id:rootStackLayout
+            width: parent.width
+            height: parent.height
+            visible: true
+            currentIndex: bar.currentIndex
+            Item {
+                id: contactTab
+                ContactList{
+                    id: contactListTab
+                    Component.onCompleted: {
+                        rootWindow.saveSignal.connect(contactListTab.saveSlot)
+                        rootWindow.loadSignal.connect(contactListTab.loadSlot)
+                    }
 
+
+                }
 
             }
 
-        }
-
-        Item {
-            id: discoverTab
-           CalendarView{
-               id: discoverListTab
-           }
-        }
-        Item {
-            id: activityTab
+            Item {
+                id: discoverTab
+               CalendarView{
+                   id: discoverListTab
+               }
+            }
+            Item {
+                id: activityTab
+            }
         }
     }
-
 
 }
 

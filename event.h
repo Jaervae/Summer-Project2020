@@ -14,6 +14,9 @@ class Event : public QObject
     Q_PROPERTY(QDateTime endDate READ endDate WRITE setEndDate NOTIFY endDateChanged)
     Q_PROPERTY(int startTime READ startTime WRITE setStartTime NOTIFY startTimeChanged)
     Q_PROPERTY(int endTime READ endTime WRITE setEndTime NOTIFY endTimeChanged)
+    Q_PROPERTY(int dataId READ dataId WRITE setDataId NOTIFY dataIdChanged)
+
+
 
 
 public:
@@ -34,12 +37,15 @@ public:
     int endTime() const;
     void setEndTime(const int &endTime);
 
+    int dataId() const;
+    void setDataId(const int &dataId);
 signals:
     void nameChanged(const QString &name);
     void startDateChanged(const QDateTime &startDate);
     void endDateChanged(const QDateTime &endDate);
     void startTimeChanged(const int &startTime);
     void endTimeChanged(const int &endTime);
+    void dataIdChanged(const int &dataId);
 
 private:
     QString mName;
@@ -48,6 +54,8 @@ private:
 
     int mStartTime;
     int mEndTime;
+
+    int mDataId;
 };
 
 #endif // EVENT_H
