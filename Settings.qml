@@ -7,6 +7,14 @@ Item {
     id: settingsRoot
     width: parent.width
     height: parent.height
+
+    function swapSyncPref(valueOfRD1,valueOfRD2){
+        rd1.checked = valueOfRD1;
+        rd2.checked = valueOfRD2;
+        settings.changeSettingsBool("sync-cloud", rd1.checked);
+        settings.changeSettingsBool("sync-local", rd2.checked);
+    }
+
     Rectangle{
         id:rootRec
         width: parent.width
@@ -25,7 +33,11 @@ Item {
                         anchors.topMargin: 10
                         id: control
                         text: qsTr("Sync with cloud")
-                        checked: true
+                        checked: settings.loadSetting("sync-enabled")
+                        onClicked: {
+                            settings.changeSettingsBool("sync-enabled", control.checked)
+                            console.log(control.checked)
+                        }
 
                         contentItem: Text {
                             rightPadding: control.indicator.width + control.spacing
@@ -64,14 +76,20 @@ Item {
                         }
                     }
 
+
+
                     Column{
                         enabled: control.checked
                         anchors.leftMargin: 30
                         anchors.left: parent.left
                         RadioButton {
+                            onClicked: {
+                                swapSyncPref(rd1.checked,rd2.checked)
+                            }
+
                             id: rd1
                             text: qsTr("Prefer cloud over local")
-                            checked: true
+                            checked: settings.loadSetting("sync-cloud")
 
                             indicator: Rectangle {
                                 implicitWidth: 26
@@ -102,9 +120,13 @@ Item {
                             }
                         }
                         RadioButton {
+                            onClicked: {
+                                swapSyncPref(rd1.checked,rd2.checked)
+
+                            }
                             id: rd2
                             text: qsTr("Prefer local over cloud")
-                            checked: false
+                            checked: settings.loadSetting("sync-local")
 
                             indicator: Rectangle {
                                 implicitWidth: 26

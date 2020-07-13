@@ -174,10 +174,10 @@ Item {
                         }
 
                         Button {
+                            width: deleteButton.height
                             text: qsTr("X")
                             id: deleteButton
                             anchors.right: parent.right
-
                             onClicked: {
                                 console.log("Delete " + modelData.dataId + " " + modelData.name)
                             }

@@ -108,16 +108,15 @@ void FetchData::managerFinished(QNetworkReply *reply) {
     {
         QJsonObject obj = v.toObject();
         QJsonValue id = obj.value("id");
-        if (!id.isUndefined())
-            qDebug() << id.toInt();
-        qDebug() << obj.value("firstname").toString() + " " + obj.value("lastname").toString();
-        qDebug() << "Mobile:" + obj.value("mobile").toString() + ", Email:" + obj.value("email").toString();
-        Contact contact = Contact(obj.value("id").toInt(),
-                                      obj.value("firstname").toString(),
-                                      obj.value("lastname").toString(),
-                                      obj.value("mobile").toString(),
-                                      obj.value("email").toString());
-        contactlist.append(contact);
+        if (!id.isUndefined()){
+            Contact contact = Contact(obj.value("id").toInt(),
+                                          obj.value("firstname").toString(),
+                                          obj.value("lastname").toString(),
+                                          obj.value("mobile").toString(),
+                                          obj.value("email").toString());
+            contactlist.append(contact);
+        }
+
 
     }
     this->dataSearchDone = true;

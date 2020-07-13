@@ -266,6 +266,7 @@ ColumnLayout {
                                     onClicked: function(){
                                         if (nametxt.text != "" && nametxt.text != null && mobiletxt.text != "" && mobiletxt.text != null ){
                                             contactList.saveChanges(index, nametxt.text, mobiletxt.text, emailtxt.text, model.id);
+                                            console.log(index + " " + model.id);
                                             buttonEditRow.visible = false;
                                             buttonEnableEdit.visible = true;
                                             mousearea.enabled = true;

@@ -3,6 +3,7 @@
 
 #include "contactlist.h"
 #include "fetchdata.h"
+#include "settings.h"
 #include "contact.h"
 #include <QNetworkReply>
 #include <QtNetwork>
@@ -34,6 +35,11 @@ bool ContactList::setItemAt(int index, const ContactItem &item)
 
     mVisibleList[index] = item;
     return true;
+}
+
+void ContactList::settingsChanged()
+{
+    qDebug()<< "Settings changed";
 }
 
 void ContactList::getData()
@@ -116,15 +122,6 @@ void ContactList::removeOne(int index, bool removefromdb)
 
 void ContactList::saveChanges(int index, QString m_fullname, QString m_mobile, QString m_email, int id)
 {
-   int mVisibleListId = index;
-   int mItemListId = 0;
-
-   for (int i = 0; i < mItems.length(); i++){
-       if(mItems[i].id == id){
-           mItemListId = i;
-           break;
-       }
-   }
 
    emit preItemSave();
 
@@ -138,18 +135,23 @@ void ContactList::saveChanges(int index, QString m_fullname, QString m_mobile, Q
 
    Contact contact = Contact(id, fn,ln,m_mobile,m_email);
 
-   FetchData *fetchdata = new FetchData();
-   fetchdata->putData(contact, mItems[index].newEntry);
+   Settings *settingsObj = new Settings();
+   bool syncEnabled = settingsObj->loadSetting("sync-enabled").toBool();
 
-   mItems[index].newEntry = false;
-   fetchdata->getNewEntryID(m_fullname);
-   while (fetchdata->getSearchStatus() == false) {
-       QTime dieTime= QTime::currentTime().addMSecs(200);
-       while (QTime::currentTime() < dieTime)
-           QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+   if (syncEnabled){
+       FetchData *fetchdata = new FetchData();
+       fetchdata->putData(contact, mItems[index].newEntry);
+
+       fetchdata->getNewEntryID(m_fullname);
+       while (fetchdata->getSearchStatus() == false) {
+           QTime dieTime= QTime::currentTime().addMSecs(200);
+           while (QTime::currentTime() < dieTime)
+               QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+       }
+       QStringList itemObj = { fn, ln , m_mobile, m_email };
+       mItems[index].id = fetchdata->getWantedID();
    }
-   QStringList itemObj = { fn, ln , m_mobile, m_email };
-   mItems[index].id = fetchdata->getWantedID();
+   mItems[index].newEntry = false;
    emit postItemSave();
 }
 
@@ -238,7 +240,7 @@ void ContactList::saveToFile()
 }
 
 bool ContactList::loadList()
-{
+{   /* Old one
     QFile file(QStringLiteral("save.json"));
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -250,6 +252,69 @@ bool ContactList::loadList()
 
     QJsonDocument jsonResponse = QJsonDocument::fromJson(jsonData);
     QJsonArray jsonArray = jsonResponse.array();
+    */
+
+    Settings *settingsObj = new Settings();
+    bool syncCloud = settingsObj->loadSetting("sync-cloud").toBool();
+
+    if(syncCloud == true){
+        qDebug()<< "Syncing from cloud";
+        while (mItems.size() > 0) {
+            removeOne(0,false);
+        }
+        FetchData *fetchdata = new FetchData();
+        fetchdata->getData();
+        while (fetchdata->getSearchStatus() == false) {
+            QTime dieTime= QTime::currentTime().addMSecs(200);
+            while (QTime::currentTime() < dieTime)
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+        }
+        QList<Contact> qList = fetchdata->getList();
+        for(int i = 0; i < qList.size(); i++){
+            emit preItemAppended(mVisibleList.length());
+
+            ContactItem item;
+            item.fullname = qList[i].getFN() + " " + qList[i].getLN();
+            item.email = qList[i].getEmail();
+            item.mobile = qList[i].getMobile();
+            item.newEntry = false;
+            mItems.append(item);
+            int index = getAlpapheticOrder(item.fullname);
+            mVisibleList.insert(index, item);
+            emit postItemAppended();
+        }
+        qDebug()<< mItems.length();
+        this->saveToFile();
+    }else{
+        qDebug()<< "Syncing from local";
+        FetchData *fetchdata = new FetchData();
+        fetchdata->getData();
+        while (fetchdata->getSearchStatus() == false) {
+            QTime dieTime= QTime::currentTime().addMSecs(200);
+            while (QTime::currentTime() < dieTime)
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
+        }
+        QList<Contact> qList = fetchdata->getList();
+        for (int i = 0; i < mItems.length(); i++){
+            bool alreadyOnCloud = false;
+            for(int j = 0; j < qList.length(); j++){
+                if(mItems[i].id == qList[j].getID()){
+                    qDebug()<<"found: "+ qList[j].getFN();
+                    if(mItems[i].fullname != qList[j].getFN() + " " + qList[j].getLN() || mItems[i].email != qList[j].getEmail()|| mItems[i].mobile != qList[j].getMobile()){
+                        this->saveChanges(i, mItems[i].fullname, mItems[i].mobile, mItems[i].email, mItems[i].id);
+                        qDebug()<<"edited";
+                    }
+                    alreadyOnCloud = true;
+                    break;
+                }
+            }
+            if (!alreadyOnCloud){
+                qDebug()<<mItems[i].fullname;
+                //this->saveChanges(i, mItems[i].fullname, mItems[i].mobile, mItems[i].email, mItems[i].id);
+            }
+        }
+
+    }
 
     return true;
 }

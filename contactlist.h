@@ -43,6 +43,7 @@ signals:
 
 
 public slots:
+    void settingsChanged();
     void getData();
     void appendItem();
     void removeCompletedItems();

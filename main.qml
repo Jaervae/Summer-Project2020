@@ -84,7 +84,7 @@ ApplicationWindow {
                         onClicked: rootWindow.saveSignal()
                     }
                     MenuItem {
-                        text: "Load"
+                        text: "Sync"
                         id: loadItem
                         onClicked: rootWindow.loadSignal()
                     }
