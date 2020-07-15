@@ -120,7 +120,7 @@ void ContactList::removeOne(int index, bool removefromdb)
 
 
 
-void ContactList::saveChanges(int index, QString m_fullname, QString m_mobile, QString m_email, int id)
+void ContactList::saveChanges(int indexOfVisibleList, QString m_fullname, QString m_mobile, QString m_email, int itemId)
 {
 
    emit preItemSave();
@@ -133,14 +133,23 @@ void ContactList::saveChanges(int index, QString m_fullname, QString m_mobile, Q
    } else ln = "";
    QString fn = fullname.join(' ');
 
-   Contact contact = Contact(id, fn,ln,m_mobile,m_email);
+   Contact contact = Contact(itemId, fn,ln,m_mobile,m_email);
 
    Settings *settingsObj = new Settings();
    bool syncEnabled = settingsObj->loadSetting("sync-enabled").toBool();
+   int indexOfmItems;
+
+   for(int i = 0; i < mItems.size(); i++){
+       if(mVisibleList[indexOfVisibleList].id == mItems[i].id) {
+           indexOfmItems = i;
+           break;
+       }
+
+   }
 
    if (syncEnabled){
        FetchData *fetchdata = new FetchData();
-       fetchdata->putData(contact, mItems[index].newEntry);
+       fetchdata->putData(contact, mVisibleList[indexOfVisibleList].newEntry);
 
        fetchdata->getNewEntryID(m_fullname);
        while (fetchdata->getSearchStatus() == false) {
@@ -149,9 +158,38 @@ void ContactList::saveChanges(int index, QString m_fullname, QString m_mobile, Q
                QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
        }
        QStringList itemObj = { fn, ln , m_mobile, m_email };
-       mItems[index].id = fetchdata->getWantedID();
+       //mItems[indexOfmItems].id = fetchdata->getWantedID();
+
+
+
    }
-   mItems[index].newEntry = false;
+   FetchData *fetchdata = new FetchData();
+   fetchdata->getData();
+   while (fetchdata->getSearchStatus() == false) {
+       QTime dieTime= QTime::currentTime().addSecs(1);
+       while (QTime::currentTime() < dieTime)
+           QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+       qDebug()<< "Search is not done";
+   }
+   QList<Contact> qList = fetchdata->getList();
+   for(int i = 0; i < qList.size(); i++){
+       if(mVisibleList[indexOfVisibleList].fullname == qList[i].getFN() + " " + qList[i].getLN() && mVisibleList[indexOfVisibleList].email == qList[i].getEmail()) {
+           mVisibleList[indexOfVisibleList].id = qList[i].getID();
+           mItems[indexOfmItems].id = qList[i].getID();
+           break;
+       }
+    mItems[indexOfmItems].newEntry = false;
+   }
+
+   mItems[indexOfmItems].fullname = mVisibleList[indexOfVisibleList].fullname;
+   qDebug()<<mItems[indexOfmItems].fullname;
+   qDebug()<<mVisibleList[indexOfVisibleList].fullname;
+   qDebug()<<mItems[indexOfmItems].id;
+   qDebug()<<mVisibleList[indexOfVisibleList].id;
+   qDebug()<<mItems.length();
+   qDebug()<<mVisibleList.length();
+   qDebug()<<mItems[indexOfmItems].newEntry;
+   qDebug()<<mVisibleList[indexOfVisibleList].newEntry;
    emit postItemSave();
 }
 
@@ -278,6 +316,7 @@ bool ContactList::loadList()
             item.email = qList[i].getEmail();
             item.mobile = qList[i].getMobile();
             item.newEntry = false;
+            item.id = qList[i].getID();
             mItems.append(item);
             int index = getAlpapheticOrder(item.fullname);
             mVisibleList.insert(index, item);
@@ -295,22 +334,28 @@ bool ContactList::loadList()
                 QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
         }
         QList<Contact> qList = fetchdata->getList();
-        for (int i = 0; i < mItems.length(); i++){
+        for (int i = 0; i < mVisibleList.length(); i++){
             bool alreadyOnCloud = false;
             for(int j = 0; j < qList.length(); j++){
-                if(mItems[i].id == qList[j].getID()){
-                    qDebug()<<"found: "+ qList[j].getFN();
-                    if(mItems[i].fullname != qList[j].getFN() + " " + qList[j].getLN() || mItems[i].email != qList[j].getEmail()|| mItems[i].mobile != qList[j].getMobile()){
-                        this->saveChanges(i, mItems[i].fullname, mItems[i].mobile, mItems[i].email, mItems[i].id);
-                        qDebug()<<"edited";
+                /*qDebug()<< mItems[i].id;
+                qDebug()<< qList[j].getID();
+                qDebug()<< "---------------";*/
+                if(mVisibleList[i].id == qList[j].getID()){
+                    qDebug()<<"found: " + qList[j].getFN() + " || " + mVisibleList[i].fullname;
+                    if(mVisibleList[i].fullname != qList[j].getFN() + " " + qList[j].getLN() || mVisibleList[i].email != qList[j].getEmail()|| mVisibleList[i].mobile != qList[j].getMobile()){
+                        this->saveChanges(i, mVisibleList[i].fullname, mVisibleList[i].mobile, mVisibleList[i].email, mVisibleList[i].id);
+                        qDebug()<<"Diffrence found from:" + mVisibleList[i].fullname + ", " +qList[j].getFN() + " " + qList[j].getLN();
+                        qDebug()<< mVisibleList[i].email + ", " +qList[j].getEmail();
+                        qDebug()<< mVisibleList[i].mobile + ", " +qList[j].getMobile();
                     }
                     alreadyOnCloud = true;
                     break;
                 }
             }
             if (!alreadyOnCloud){
-                qDebug()<<mItems[i].fullname;
-                //this->saveChanges(i, mItems[i].fullname, mItems[i].mobile, mItems[i].email, mItems[i].id);
+                qDebug()<< "new entry: " + mVisibleList[i].fullname;
+                qDebug()<< mVisibleList[i].id;
+                this->saveChanges(i, mVisibleList[i].fullname, mVisibleList[i].mobile, mVisibleList[i].email, mVisibleList[i].id);
             }
         }
 

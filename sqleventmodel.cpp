@@ -62,7 +62,7 @@ void SqlEventModel::newEvent(QString startDate, QString startTime, QString endDa
     mStartDate.setDate(QDate(dateList[2].toInt(),dateList[1].toInt(),dateList[0].toInt()));
     mStartDate.setTime(QTime(0, 0).addSecs(seconds));
     event->setStartDate(mStartDate);
-    qDebug()<<mStartDate;
+    //qDebug()<<mStartDate;
 
     dateList = endDate.split("-");
     timeList = endTime.split(":");
@@ -72,10 +72,10 @@ void SqlEventModel::newEvent(QString startDate, QString startTime, QString endDa
     mEndDate.setDate(QDate(dateList[2].toInt(),dateList[1].toInt(),dateList[0].toInt()));
     mEndDate.setTime(QTime(0, 0).addSecs(seconds));
     event->setEndDate(mEndDate);
-    qDebug()<<mEndDate;
+    //qDebug()<<mEndDate;
     event->setDataId(eventList.size());
     eventList.append(event);
-    qDebug()<<"New event added";
+    //qDebug()<<"New event added";
     event->nameChanged(event->name());
 
     saveChanges();
@@ -119,9 +119,9 @@ void SqlEventModel::createConnection()
     query.prepare("INSERT INTO Event (name, startDate, startTime, endDate, endTime) "
                   "VALUES (:name, :startDate, :startTime, :endDate, :endTime)");
     for (int i = 0; i < eventList.length(); i++){
-        qDebug()<< i;
-        qDebug()<< eventList[i]->startDate().date();
-        qDebug()<< (eventList[i]->startDate().time().msecsSinceStartOfDay() / 1000 );
+        //qDebug()<< i;
+        //qDebug()<< eventList[i]->startDate().date();
+        //qDebug()<< (eventList[i]->startDate().time().msecsSinceStartOfDay() / 1000 );
         query.bindValue(":name", eventList[i]->name());
         query.bindValue(":startDate", eventList[i]->startDate().date());
         query.bindValue(":startTime", (eventList[i]->startDate().time().msecsSinceStartOfDay() / 1000 ));
@@ -162,7 +162,7 @@ bool SqlEventModel::saveChanges()
     QJsonObject object;
     object["Events"] = array;
     QJsonDocument saveDoc(object);
-    qDebug()<<array;
+    //qDebug()<<array;
 
     QFile saveFile(QStringLiteral("events.json"));
 
@@ -173,7 +173,7 @@ bool SqlEventModel::saveChanges()
     }
     saveFile.write(QJsonDocument(array).toJson());
 
-    qDebug()<<"Done saving";
+    //qDebug()<<"Done saving";
 
     return true;
 }
@@ -193,7 +193,7 @@ bool SqlEventModel::loadEvents()
     QJsonDocument jsonResponse = QJsonDocument::fromJson(jsonData);
     QJsonArray jsonArray = jsonResponse.array();
 
-    qDebug()<< jsonArray;
+    //qDebug()<< jsonArray;
 
     foreach (const QJsonValue & v, jsonArray){
         Event *event = new Event(this);
@@ -202,11 +202,11 @@ bool SqlEventModel::loadEvents()
         QString str = v.toObject().value("start-date").toString();
         QStringList strList = str.split("-");
         QDateTime startDate;
-        qDebug()<<strList;
+        //qDebug()<<strList;
         startDate.setDate(QDate(strList[0].toInt(),strList[1].toInt(),strList[2].toInt()));
         startDate.setTime(QTime(0, 0).addSecs(v.toObject().value("start-time").toInt()));
         event->setStartDate(startDate);
-        qDebug()<<startDate.date();
+        //qDebug()<<startDate.date();
 
         str = v.toObject().value("end-date").toString();
         strList = str.split("-");
@@ -214,7 +214,7 @@ bool SqlEventModel::loadEvents()
         endDate.setDate(QDate(strList[0].toInt(),strList[1].toInt(),strList[2].toInt()));
         endDate.setTime(QTime(0, 0).addSecs(v.toObject().value("start-time").toInt()));
         event->setEndDate(endDate);
-        qDebug()<< eventList.length();
+        //qDebug()<< eventList.length();
         event->setDataId(eventList.length());
         eventList.append(event);
     }

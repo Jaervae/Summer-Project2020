@@ -131,7 +131,7 @@ void FetchData::replyFinished(QNetworkReply *reply)
     }
 
     QString answer = reply->readAll();
-    qDebug() << answer.toUtf8();
+    //qDebug() << answer.toUtf8();
     getData();
 
 }
@@ -153,11 +153,11 @@ void FetchData::getnewest(QNetworkReply *reply)
         QJsonObject obj = v.toObject();
         QJsonValue id = obj.value("id");
         if (!id.isUndefined()){
-            qDebug() << id.toInt();
+            //qDebug() << id.toInt();
             QString currentName = obj.value("firstname").toString() + " " + obj.value("lastname").toString();
             if(currentName == this->wantedItem){
                 this->wantedID = id.toInt();
-                qDebug()<<"found";
+                //qDebug()<<"found";
                 found = true;
                 break;
             }
