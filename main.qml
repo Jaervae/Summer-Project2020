@@ -8,7 +8,7 @@ ApplicationWindow {
     width: 640
     height: 480
     id:rootWindow
-    title: qsTr("Utility app")
+    title: qsTr("QT mobile app")
     signal saveSignal()
     signal loadSignal()
 
@@ -25,7 +25,7 @@ ApplicationWindow {
         id:toolBar
         topPadding: Qt.platform.os === "ios" ? Screen.height - Screen.desktopAvailableHeight : 0
         contentItem: Text {
-            text: "Utility App"
+            text: "QT mobile app"
             font.pointSize: 22
             opacity: enabled ? 1.0 : 0.3
             color: "#21be2b"
@@ -43,8 +43,8 @@ ApplicationWindow {
             anchors.fill: parent
 
             ToolButton {
+                Layout.alignment: Qt.AlignLeft
                 hoverEnabled: false
-                anchors.left: parent.left
                 contentItem: Image {
                     horizontalAlignment: Image.AlignHCenter
                     verticalAlignment: Image.AlignVCenter
@@ -61,6 +61,7 @@ ApplicationWindow {
 
 
             ToolButton {
+                Layout.alignment: Qt.AlignCenter
                 hoverEnabled: false
                 anchors.right: parent.right
                 id: menubutton

@@ -19,7 +19,7 @@ public:
 
 
 public slots:
-    void newEvent(QString startDate, QString startTime, QString endDate, QString endTime);
+    void newEvent(QString eventName, QString startDate, QString startTime, QString endDate, QString endTime);
 
 private:
     void createConnection();

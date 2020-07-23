@@ -48,11 +48,11 @@ QList<QObject*> SqlEventModel::eventsForDate(const QDate &date)
     return events;
 }
 
-void SqlEventModel::newEvent(QString startDate, QString startTime, QString endDate, QString endTime)
+void SqlEventModel::newEvent(QString eventName, QString startDate, QString startTime, QString endDate, QString endTime)
 {
     Event *event = new Event(this);
 
-    event->setName("new event");
+    event->setName(eventName);
 
     QStringList dateList = startDate.split("-");
     QStringList timeList = startTime.split(":");
@@ -79,6 +79,7 @@ void SqlEventModel::newEvent(QString startDate, QString startTime, QString endDa
     event->nameChanged(event->name());
 
     saveChanges();
+    loadEvents();
     createConnection();
 }
 

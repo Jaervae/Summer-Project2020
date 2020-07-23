@@ -33,8 +33,9 @@ ColumnLayout {
             TextField {
                 Material.accent: Material.color("21be2b",Material.Shade50)
                 id: searchText
-                anchors.left: searchRow.left
-                anchors.right: btnsa.left
+                Layout.alignment: Qt.AlignCenter
+                //anchors.left: searchRow.left
+                //anchors.right: btnsa.left
                 anchors.rightMargin: 10
                 anchors.leftMargin: 5
                 width: parent.fillWidth
@@ -71,7 +72,7 @@ ColumnLayout {
         ListView {
             anchors.top: searchRow.bottom
             id: contactListView
-            implicitWidth: parent.width
+            width: parent.width
             implicitHeight: parent.height
             anchors.bottom: parent.bottom
             clip: true
@@ -244,6 +245,9 @@ ColumnLayout {
                                                 radius: 5
                                             }
                                         }
+                                    }
+                                    TextField{
+                                        placeholderText: qsTr("enetrnam")
                                     }
 
                                 }

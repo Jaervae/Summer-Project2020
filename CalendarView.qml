@@ -4,6 +4,8 @@ import QtQuick.Controls.Private 1.0
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Dialogs 1.2
 import SqlEvent 1.0
+import QtQuick.Window 2.2
+
 Item {
     width: parent.width
     height: parent.height
@@ -33,7 +35,7 @@ Item {
                 height: (parent.height > parent.width ? parent.height * 0.6 - parent.spacing : parent.height)
                 frameVisible: true
                 weekNumbersVisible: true
-                selectedDate: new Date(2014, 0, 1)
+                selectedDate: new Date()
                 focus: true
 
                 style: CalendarStyle {
@@ -178,16 +180,18 @@ Item {
                             text: qsTr("X")
                             id: deleteButton
                             anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
                             onClicked: {
                                 console.log("Delete " + modelData.dataId + " " + modelData.name)
                             }
+
                             style: ButtonStyle{
                                 background: Rectangle {
                                     color: "transparent"
                                     opacity: enabled ? 1 : 0.3
                                     border.color: "red"
                                     border.width: 1
-                                    radius: 10
+                                    radius: 20
                                 }
                                 label: Text {
                                     text: deleteButton.text
@@ -237,21 +241,19 @@ Item {
                     }
 
                 }
+
                 Dialog {
                     visible: false
                     id:dialog
                     title: "Add new event"
                     contentItem: Rectangle{
-                        implicitHeight: 150
+                        implicitHeight: 200
                         implicitWidth: 300
                         color: "black"
                         opacity: enabled ? 1 : 0.3
                         border.color: "white"
                         border.width: 1
                         radius: 5
-                        Column{
-                            height: parent.height
-                            width: parent.width
                             Row{
                                 id:label
                                 anchors.topMargin: 10
@@ -266,156 +268,196 @@ Item {
                                 }
                             }
 
-                            Rectangle{
-                                anchors.top: label.bottom
+                            Row{
+                                id:rowEventName
                                 anchors.topMargin: 5
-                                height: dialog.height - label.height
-                                width: parent.width
-                                Column{
-                                    width: parent.width
-                                    Row{
-                                        id: textfieldrow
-                                        anchors.topMargin: 10
-                                        anchors.bottomMargin: 10
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        Column{
-                                            id:startcolumn
-                                            Text {
-                                                id: assadsaddd
-                                                color: "white"
-                                                text: qsTr("Start date")
-                                            }
-                                            TextField {
-                                                id: startDateTXT
-                                                anchors.rightMargin: 10
-                                                anchors.leftMargin: 5
-                                                width: parent.fillWidth
-                                                text: calendar.selectedDate.getDate()+"-"+
-                                                      (calendar.selectedDate.getMonth() + 1) + "-" +
-                                                      calendar.selectedDate.toLocaleDateString(Qt.locale(), "yyyy")
-                                                inputMethodHints: Qt.ImhNoPredictiveText
-                                                placeholderText: "dd-mm-yyyy"
-                                                onTextChanged: {
-
-                                                }
-                                            }
-                                            TextField {
-                                                id: startTimeTXT
-                                                anchors.rightMargin: 10
-                                                anchors.leftMargin: 5
-                                                width: parent.fillWidth
-                                                text: "9:00"
-                                                inputMethodHints: Qt.ImhNoPredictiveText
-                                                placeholderText: "hh:mm"
-                                                onTextChanged: {
-
-                                                }
-                                            }
-                                        }
-                                        Column{
-
-                                            id:endcolumn
-                                            Text {
-                                                id: ds
-                                                color: "white"
-                                                text: qsTr("End date")
-                                            }
-                                            TextField {
-                                                id: endDateTXT
-                                                anchors.rightMargin: 10
-                                                anchors.leftMargin: 5
-                                                width: parent.fillWidth
-                                                text: calendar.selectedDate.getDate()+"-"+
-                                                      (calendar.selectedDate.getMonth() + 1) + "-" +
-                                                      calendar.selectedDate.toLocaleDateString(Qt.locale(), "yyyy")
-                                                inputMethodHints: Qt.ImhNoPredictiveText
-                                                placeholderText: "dd-mm-yyyy"
-                                                onTextChanged: {
-
-                                                }
-                                            }
-                                            TextField {
-                                                id: endTimeTXT
-                                                anchors.rightMargin: 10
-                                                anchors.leftMargin: 5
-                                                width: parent.fillWidth
-                                                text: "16:00"
-                                                inputMethodHints: Qt.ImhNoPredictiveText
-                                                placeholderText: "hh:mm"
-                                                onTextChanged: {
-
-                                                }
-                                            }
-                                        }
-                                    }
-
-
-                                    Row{
-                                        anchors.top: textfieldrow.bottom
-                                        anchors.topMargin: 10
-                                        anchors.bottomMargin: 10
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        Button {
-                                            text: qsTr("Cancel")
-                                            id: btn1
-                                            onClicked: dialog.visible = false
-                                            style: ButtonStyle{
-                                                background: Rectangle {
-                                                    color: "transparent"
-                                                    opacity: enabled ? 1 : 0.3
-                                                    border.color: btn1.down ? "#17a81a" : "#21be2b"
-                                                    border.width: 1
-                                                    radius: 5
-                                                }
-                                                label: Text {
-                                                    text: btn1.text
-                                                    //font: btn1.font
-                                                    opacity: enabled ? 1.0 : 0.3
-                                                    color: btn1.down ? "#17a81a" : "#21be2b"
-                                                    horizontalAlignment: Text.AlignHCenter
-                                                    verticalAlignment: Text.AlignVCenter
-                                                    elide: Text.ElideRight
-                                                }
-                                            }
-                                        }
-
-                                        Button {
-                                            text: qsTr("Save")
-                                            id: btn2
-                                            onClicked: {
-                                                sqlEventModel.newEvent(startDateTXT.text,
-                                                                       startTimeTXT.text,
-                                                                       endDateTXT.text,
-                                                                       endTimeTXT.text);
-                                                dialog.close()
-                                                calendar.update();
-                                            }
-                                            style: ButtonStyle{
-                                                background: Rectangle {
-                                                    color: "transparent"
-                                                    opacity: enabled ? 1 : 0.3
-                                                    border.color: btn2.down ? "#17a81a" : "#21be2b"
-                                                    border.width: 1
-                                                    radius: 5
-                                                }
-                                                label: Text {
-                                                    text: btn2.text
-                                                    //font: btn2.font
-                                                    opacity: enabled ? 1.0 : 0.3
-                                                    color: btn2.down ? "#17a81a" : "#21be2b"
-                                                    horizontalAlignment: Text.AlignHCenter
-                                                    verticalAlignment: Text.AlignVCenter
-                                                    elide: Text.ElideRight
-                                                }
-                                            }
+                                anchors.top: label.bottom
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                Text {
+                                    id: eventname
+                                    text: qsTr("Event name  ")
+                                    color: "white"
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                TextField {
+                                    id: txtEventName
+                                    anchors.rightMargin: 10
+                                    anchors.leftMargin: 5
+                                    inputMethodHints: Qt.ImhNoPredictiveText
+                                    placeholderText: "Enter event name"
+                                    textColor: "white"
+                                    style: TextFieldStyle{
+                                        background: Rectangle{
+                                            implicitWidth: 100
+                                            implicitHeight: 30
+                                            color: control.enabled ? "transparent" : "#353637"
+                                            border.color: "white"
                                         }
                                     }
 
                                 }
                             }
-                        }
 
+                            Row{
+                                id:rowStartDate
+                                anchors.topMargin: 5
+                                anchors.top: rowEventName.bottom
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                Text {
+                                    id: txtStartDate
+                                    text: qsTr("Start Date  ")
+                                    color: "white"
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
 
+                                TextField {
+                                    id: startDateTXT
+                                    anchors.rightMargin: 10
+                                    anchors.leftMargin: 5
+                                    text: calendar.selectedDate.getDate()+"-"+
+                                          (calendar.selectedDate.getMonth() + 1) + "-" +
+                                          calendar.selectedDate.toLocaleDateString(Qt.locale(), "yyyy")
+                                    inputMethodHints: Qt.ImhNoPredictiveText
+                                    placeholderText: "dd-mm-yyyy"
+                                    textColor: "white"
+                                    style: TextFieldStyle{
+                                        background: Rectangle{
+                                            implicitWidth: 90
+                                            implicitHeight: 30
+                                            color: control.enabled ? "transparent" : "#353637"
+                                            border.color: "white"
+                                        }
+                                    }
+
+                                }
+                                TextField {
+                                    id: startTimeTXT
+                                    anchors.rightMargin: 10
+                                    anchors.leftMargin: 5
+                                    text: "9:00"
+                                    textColor: "white"
+                                    inputMethodHints: Qt.ImhNoPredictiveText
+                                    placeholderText: "hh:mm"
+                                    style: TextFieldStyle{
+                                        background: Rectangle{
+                                            implicitWidth: 50
+                                            implicitHeight: 30
+                                            color: control.enabled ? "transparent" : "#353637"
+                                            border.color: "white"
+                                        }
+                                    }
+
+                                }
+                            }
+                            Row{
+                                id:rowEndDate
+                                anchors.topMargin: 5
+                                anchors.top: rowStartDate.bottom
+                                anchors.horizontalCenter: rowStartDate.horizontalCenter
+                                Text {
+                                    id: txtEndDate
+                                    text: qsTr("  End Date  ")
+                                    color: "white"
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                TextField {
+                                    id: endDateTXT
+                                    anchors.rightMargin: 10
+                                    anchors.leftMargin: 5
+                                    text: calendar.selectedDate.getDate()+"-"+
+                                          (calendar.selectedDate.getMonth() + 1) + "-" +
+                                          calendar.selectedDate.toLocaleDateString(Qt.locale(), "yyyy")
+                                    inputMethodHints: Qt.ImhNoPredictiveText
+                                    placeholderText: "dd-mm-yyyy"
+                                    textColor: "white"
+                                    style: TextFieldStyle{
+                                        background: Rectangle{
+                                            implicitWidth: 90
+                                            implicitHeight: 30
+                                            color: control.enabled ? "transparent" : "#353637"
+                                            border.color: "white"
+                                        }
+                                    }
+                                }
+                                TextField {
+                                    id: endTimeTXT
+                                    anchors.rightMargin: 10
+                                    anchors.leftMargin: 5
+                                    text: "16:00"
+                                    inputMethodHints: Qt.ImhNoPredictiveText
+                                    placeholderText: "hh:mm"
+                                    textColor: "white"
+                                    style: TextFieldStyle{
+                                        background: Rectangle{
+                                            implicitWidth: 50
+                                            implicitHeight: 30
+                                            color: control.enabled ? "transparent" : "#353637"
+                                            border.color: "white"
+                                        }
+                                    }
+                                }
+                            }
+                            Row{
+                                id:rowButtons
+                                anchors.topMargin: 10
+                                anchors.top: rowEndDate.bottom
+                                anchors.horizontalCenter: rowEndDate.horizontalCenter
+
+                                Button {
+                                    text: qsTr("Cancel")
+                                    id: btn1
+                                    onClicked: dialog.visible = false
+                                    style: ButtonStyle{
+                                        background: Rectangle {
+                                            color: "transparent"
+                                            opacity: enabled ? 1 : 0.3
+                                            border.color: btn1.down ? "#17a81a" : "#21be2b"
+                                            border.width: 1
+                                            radius: 5
+                                        }
+                                        label: Text {
+                                            text: btn1.text
+                                            //font: btn1.font
+                                            opacity: enabled ? 1.0 : 0.3
+                                            color: btn1.down ? "#17a81a" : "#21be2b"
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                            elide: Text.ElideRight
+                                        }
+                                    }
+                                }
+                                Button {
+                                    text: qsTr("Save")
+                                    id: btn2
+                                    onClicked: {
+                                        sqlEventModel.newEvent(txtEventName.text,
+                                                               startDateTXT.text,
+                                                               startTimeTXT.text,
+                                                               endDateTXT.text,
+                                                               endTimeTXT.text);
+                                        dialog.close();
+                                        calendar.update();
+                                    }
+                                    style: ButtonStyle{
+                                        background: Rectangle {
+                                            color: "transparent"
+                                            opacity: enabled ? 1 : 0.3
+                                            border.color: btn2.down ? "#17a81a" : "#21be2b"
+                                            border.width: 1
+                                            radius: 5
+                                        }
+                                        label: Text {
+                                            text: btn2.text
+                                            //font: btn2.font
+                                            opacity: enabled ? 1.0 : 0.3
+                                            color: btn2.down ? "#17a81a" : "#21be2b"
+                                            horizontalAlignment: Text.AlignHCenter
+                                            verticalAlignment: Text.AlignVCenter
+                                            elide: Text.ElideRight
+                                        }
+                                    }
+                                }
+                            }
                     }
 
                 }
