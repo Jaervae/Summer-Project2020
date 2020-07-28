@@ -24,6 +24,7 @@ SOURCES += \
         contactlist.cpp \
         contactmodel.cpp \
         event.cpp \
+        eventmodel.cpp \
         fetchdata.cpp \
         main.cpp \
         settings.cpp \
@@ -49,6 +50,7 @@ HEADERS += \
     contactlist.h \
     contactmodel.h \
     event.h \
+    eventmodel.h \
     fetchdata.h \
     settings.h \
     sqleventmodel.h

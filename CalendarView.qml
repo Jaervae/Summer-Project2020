@@ -3,23 +3,22 @@ import QtQuick.Controls 1.2
 import QtQuick.Controls.Private 1.0
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Dialogs 1.2
-import SqlEvent 1.0
+import Event 1.0
 import QtQuick.Window 2.2
 
 Item {
     width: parent.width
     height: parent.height
 
-    SqlEventModel{
-        id:sqlEventModel
-    }
-
     SystemPalette {
         id: systemPalette
     }
 
-    SqlEventModel {
-        id: eventModel
+    function loadImages(currentDate){
+        return sqlEventModel.eventsForDate(currentDate).length > 0;
+    }
+    function loadImagess(currentDate){
+        return sqlEventModel.eventsForDate(currentDate).length;
     }
 
     Flow {
@@ -28,7 +27,6 @@ Item {
             anchors.margins: 20
             spacing: 10
             layoutDirection: Qt.RightToLeft
-
             Calendar {
                 id: calendar
                 width: (parent.width > parent.height ? parent.width * 0.6 - parent.spacing : parent.width)
@@ -40,11 +38,12 @@ Item {
 
                 style: CalendarStyle {
                     dayDelegate: Item {
+
                         readonly property color sameMonthDateTextColor: "#444"
                         readonly property color selectedDateColor: Qt.platform.os === "osx" ? "#3778d0" : systemPalette.highlight
                         readonly property color selectedDateTextColor: "white"
                         readonly property color differentMonthDateTextColor: "#bbb"
-                        readonly property color invalidDatecolor: "#dddddd"
+                        readonly property color invalidDatecolor: "#17a81a"
 
                         Rectangle {
                             anchors.fill: parent
@@ -53,14 +52,18 @@ Item {
                             anchors.margins: styleData.selected ? -1 : 0
                         }
 
+                        property alias valueImageVisible : valueImage.visible
                         Image {
-                            visible: eventModel.eventsForDate(styleData.date).length > 0
+                            id: valueImage
+                            visible: loadImages(styleData.date)
                             anchors.top: parent.top
                             anchors.left: parent.left
                             anchors.margins: -1
                             width: 12
                             height: width
                             source: "images/eventindicator.png"
+
+
                         }
 
                         Label {
@@ -130,7 +133,15 @@ Item {
                     height: parent.height - newButton.height
                     anchors.fill: parent
                     anchors.margins: 10
-                    model: eventModel.eventsForDate(calendar.selectedDate)
+                    //model: sqlEventModel.eventsForDate(calendar.selectedDate)
+                    model: EventModel{
+                        /*function myFunction(asd){
+                            var mylist = asd;
+                            console.log(asd);
+                            return asd;
+                        }*/
+                        list: sqlEventModel.eventsForDate(calendar.selectedDate).length
+                    }
 
                     delegate: Rectangle {
                         width: eventsListView.width
@@ -162,15 +173,15 @@ Item {
                                 id: nameLabel
                                 width: parent.width
                                 wrapMode: Text.Wrap
-                                text: modelData.name
+                                text: model.eventName
                             }
 
                             Label {
                                 id: timeLabel
                                 width: parent.width
                                 wrapMode: Text.Wrap
-                                text: modelData.startDate.toLocaleTimeString(calendar.locale, Locale.ShortFormat) + " - " +
-                                      modelData.endDate.toLocaleTimeString(calendar.locale, Locale.ShortFormat)
+                                text: model.startDate.toLocaleTimeString(calendar.locale, Locale.ShortFormat) + " - " +
+                                      model.endDate.toLocaleTimeString(calendar.locale, Locale.ShortFormat)
                                 color: "#aaa"
                             }
                         }
@@ -182,7 +193,8 @@ Item {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             onClicked: {
-                                console.log("Delete " + modelData.dataId + " " + modelData.name)
+                                console.log("Delete " + model.id + " " + model.eventName)
+                                sqlEventModel.removeOne(model.id);
                             }
 
                             style: ButtonStyle{

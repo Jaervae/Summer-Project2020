@@ -295,6 +295,7 @@ bool ContactList::loadList()
     Settings *settingsObj = new Settings();
     bool syncCloud = settingsObj->loadSetting("sync-cloud").toBool();
 
+    //Sync from cloud
     if(syncCloud == true){
         qDebug()<< "Syncing from cloud";
         while (mItems.size() > 0) {

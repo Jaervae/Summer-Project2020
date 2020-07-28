@@ -61,9 +61,8 @@ ApplicationWindow {
 
 
             ToolButton {
-                Layout.alignment: Qt.AlignCenter
+                Layout.alignment: Qt.AlignRight || Qt.AlignVCenter
                 hoverEnabled: false
-                anchors.right: parent.right
                 id: menubutton
                 contentItem: Image {
                     horizontalAlignment: Image.AlignHCenter
