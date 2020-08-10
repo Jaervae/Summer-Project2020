@@ -1,17 +1,17 @@
-#ifndef EVENTMODEL_H
-#define EVENTMODEL_H
+#ifndef SELECTEDDAYEVENTSMODEL_H
+#define SELECTEDDAYEVENTSMODEL_H
 
 #include <QAbstractListModel>
 
 class SqlEvent;
 
-class EventModel : public QAbstractListModel
+class SelectedDayEventsModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(SqlEvent *list READ list WRITE  setList)
 
 public:
-    explicit EventModel(QObject *parent = nullptr);
+    explicit SelectedDayEventsModel (QObject *parent = nullptr);
 
     enum {
         RoleID = Qt::UserRole,
@@ -43,4 +43,4 @@ private:
     SqlEvent *mList;
 };
 
-#endif // EVENTMODEL_H
+#endif // SELECTEDDAYEVENTSMODEL_H

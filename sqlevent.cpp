@@ -1,4 +1,4 @@
-#include "sqleventmodel.h"
+#include "sqlevent.h"
 #include "event.h"
 
 #include <QDebug>
@@ -10,18 +10,23 @@
 #include <QNetworkAccessManager>
 #include <QDateTime>
 
-SqlEventModel::SqlEventModel(QObject *parent) : QObject(parent)
+SqlEvent::SqlEvent(QObject *parent) : QObject(parent)
 {
     loadEvents();
     createConnection();
 }
 
-QVector<EventItem> SqlEventModel::items() const
+QVector<EventItem> SqlEvent::items() const
 {
     return eventList;
 }
 
-bool SqlEventModel::setItemAt(int index, const EventItem &item)
+QVector<EventItem> SqlEvent::currentItems() const
+{
+    return selectedDateEventsList;
+}
+
+bool SqlEvent::setItemAt(int index, const EventItem &item)
 {
     if (index < 0 || index >= eventList.size())
         return false;
@@ -34,8 +39,21 @@ bool SqlEventModel::setItemAt(int index, const EventItem &item)
     return true;
 }
 
+bool SqlEvent::setItemAtSelectedList(int index, const EventItem &item)
+{
+    if (index < 0 || index >= selectedDateEventsList.size())
+        return false;
 
-QList<QObject*> SqlEventModel::eventsForDate(const QDate &date)
+    const EventItem &oldItem = items().at(index);
+    if (item.id == oldItem.id && item.eventName == oldItem.eventName)
+        return false;
+
+    selectedDateEventsList[index] = item;
+    return true;
+}
+
+
+QList<QObject*> SqlEvent::eventsForDate(const QDate &date)
 {
     const QString queryStr = QString::fromLatin1("SELECT * FROM Event WHERE '%1' >= startDate AND '%1' <= endDate").arg(date.toString("yyyy-MM-dd"));
     QSqlQuery query(queryStr);
@@ -63,36 +81,8 @@ QList<QObject*> SqlEventModel::eventsForDate(const QDate &date)
     return events;
 }
 
-QList<EventItem> SqlEventModel::eventsForDateE(const QDate &date)
-{
-    const QString queryStr = QString::fromLatin1("SELECT * FROM Event WHERE '%1' >= startDate AND '%1' <= endDate").arg(date.toString("yyyy-MM-dd"));
-    QSqlQuery query(queryStr);
-    if (!query.exec())
-        qFatal("Query failed");
 
-    QList<EventItem> events;
-    while (query.next()) {
-        EventItem event;
-        event.eventName = query.value("name").toString();
-
-        QDateTime startDate;
-        startDate.setDate(query.value("startDate").toDate());
-        startDate.setTime(QTime(0, 0).addSecs(query.value("startTime").toInt()));
-        event.startDate = startDate;
-
-        QDateTime endDate;
-        endDate.setDate(query.value("endDate").toDate());
-        endDate.setTime(QTime(0, 0).addSecs(query.value("endTime").toInt()));
-        event.endDate = endDate;
-        events.append(event);
-
-    }
-
-    return events;
-}
-
-
-void SqlEventModel::newEvent(QString eventName, QString startDate, QString startTime, QString endDate, QString endTime)
+void SqlEvent::newEvent(QString eventName, QString startDate, QString startTime, QString endDate, QString endTime)
 {
     emit preItemAppended(eventList.length());
     EventItem event;
@@ -131,7 +121,16 @@ void SqlEventModel::newEvent(QString eventName, QString startDate, QString start
     emit postItemAppended();
 }
 
-void SqlEventModel::removeOne(int index)
+void SqlEvent::appendItem(EventItem item)
+{
+    emit preItemAppended(eventList.length());
+
+    selectedDateEventsList.append(item);
+
+    emit postItemAppended();
+}
+
+void SqlEvent::removeOne(int index)
 {
     emit preItemRemoved(index);
 
@@ -141,7 +140,34 @@ void SqlEventModel::removeOne(int index)
     emit postItemRemoved();
 }
 
-void SqlEventModel::createConnection()
+SqlEvent *SqlEvent::getCurrentEventsForSelectedDate(const QDate &date)
+{
+    const QString queryStr = QString::fromLatin1("SELECT * FROM Event WHERE '%1' >= startDate AND '%1' <= endDate").arg(date.toString("yyyy-MM-dd"));
+    QSqlQuery query(queryStr);
+    if (!query.exec())
+        qFatal("Query failed");
+    SqlEvent *events = new SqlEvent();
+    while (query.next()) {
+        EventItem *event = new EventItem();
+        event->eventName = query.value("name").toString();
+
+        QDateTime startDate;
+        startDate.setDate(query.value("startDate").toDate());
+        startDate.setTime(QTime(0, 0).addSecs(query.value("startTime").toInt()));
+        event->startDate = startDate;
+
+        QDateTime endDate;
+        endDate.setDate(query.value("endDate").toDate());
+        endDate.setTime(QTime(0, 0).addSecs(query.value("endTime").toInt()));
+        event->endDate = endDate;
+
+        events->appendItem(*event);
+        qDebug()<<event->eventName;
+    }
+    return events;
+}
+
+void SqlEvent::createConnection()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(":memory:");
@@ -196,7 +222,7 @@ void SqlEventModel::createConnection()
     return;
 }
 
-bool SqlEventModel::saveChanges()
+bool SqlEvent::saveChanges()
 {
     emit preItemSave();
 
@@ -235,7 +261,7 @@ bool SqlEventModel::saveChanges()
     return true;
 }
 
-bool SqlEventModel::loadEvents()
+bool SqlEvent::loadEvents()
 {
 
     QFile file(QStringLiteral("events.json"));

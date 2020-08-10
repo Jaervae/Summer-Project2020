@@ -19,19 +19,21 @@ struct EventItem{
     QString endTime;
 };
 
-class SqlEventModel : public QObject
+class SqlEvent : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit SqlEventModel(QObject *parent = nullptr);
+    explicit SqlEvent(QObject *parent = nullptr);
 
     Q_INVOKABLE QList<QObject*> eventsForDate(const QDate &date);
 
 
     QVector<EventItem> items() const;
+    QVector<EventItem> currentItems() const;
 
     bool setItemAt(int index, const EventItem &item);
+    bool setItemAtSelectedList(int index, const EventItem &item);
 
 signals:
     void preItemAppended(int index);
@@ -45,8 +47,9 @@ signals:
 
 public slots:
     void newEvent(QString eventName, QString startDate, QString startTime, QString endDate, QString endTime);
+    void appendItem(EventItem item);
     void removeOne(int index);
-    QList<EventItem> eventsForDateE(const QDate &date);
+    SqlEvent *getCurrentEventsForSelectedDate(const QDate &date);
 
 private:
     void createConnection();
@@ -54,8 +57,9 @@ private:
     bool saveChanges();
     bool loadEvents();
 
-
     QVector<EventItem> eventList;
+    QVector<EventItem> selectedDateEventsList;
+
     QString filename;
 
 };

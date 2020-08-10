@@ -27,8 +27,9 @@ SOURCES += \
         eventmodel.cpp \
         fetchdata.cpp \
         main.cpp \
+        selecteddayeventsmodel.cpp \
         settings.cpp \
-        sqleventmodel.cpp
+        sqlevent.cpp
 
 RESOURCES += qml.qrc \
     images.qrc
@@ -52,7 +53,8 @@ HEADERS += \
     event.h \
     eventmodel.h \
     fetchdata.h \
+    selecteddayeventsmodel.h \
     settings.h \
-    sqleventmodel.h
+    sqlevent.h
 
 DISTFILES += \

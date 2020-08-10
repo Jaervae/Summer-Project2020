@@ -13,8 +13,6 @@ ApplicationWindow {
     signal loadSignal()
 
     Loader {
-      // position the Loader in the center
-      // of the parent
       id: loader
       anchors.fill: parent
       sourceComponent: mainScreenArea

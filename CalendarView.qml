@@ -3,8 +3,9 @@ import QtQuick.Controls 1.2
 import QtQuick.Controls.Private 1.0
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Dialogs 1.2
-import Event 1.0
 import QtQuick.Window 2.2
+import Event 1.0
+import CurrentDayEvents 1.0
 
 Item {
     width: parent.width
@@ -15,10 +16,10 @@ Item {
     }
 
     function loadImages(currentDate){
-        return sqlEventModel.eventsForDate(currentDate).length > 0;
+        return sqlEvent.eventsForDate(currentDate).length > 0;
     }
     function loadImagess(currentDate){
-        return sqlEventModel.eventsForDate(currentDate).length;
+        return sqlEvent.eventsForDate(currentDate).length;
     }
 
     Flow {
@@ -133,15 +134,18 @@ Item {
                     height: parent.height - newButton.height
                     anchors.fill: parent
                     anchors.margins: 10
-                    //model: sqlEventModel.eventsForDate(calendar.selectedDate)
-                    model: EventModel{
+                    //model: sqlEvent.eventsForDate(calendar.selectedDate)
+
+                    model: CurrentDayEventsModel{
                         /*function myFunction(asd){
                             var mylist = asd;
                             console.log(asd);
                             return asd;
                         }*/
-                        list: sqlEventModel.eventsForDate(calendar.selectedDate).length
+                        //list: sqlEvent.eventsForDate(calendar.selectedDate)
+                        list: sqlEvent.getCurrentEventsForSelectedDate(calendar.selectedDate)
                     }
+
 
                     delegate: Rectangle {
                         width: eventsListView.width
@@ -194,7 +198,7 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onClicked: {
                                 console.log("Delete " + model.id + " " + model.eventName)
-                                sqlEventModel.removeOne(model.id);
+                                sqlEvent.removeOne(model.id);
                             }
 
                             style: ButtonStyle{
@@ -442,7 +446,7 @@ Item {
                                     text: qsTr("Save")
                                     id: btn2
                                     onClicked: {
-                                        sqlEventModel.newEvent(txtEventName.text,
+                                        sqlEvent.newEvent(txtEventName.text,
                                                                startDateTXT.text,
                                                                startTimeTXT.text,
                                                                endDateTXT.text,

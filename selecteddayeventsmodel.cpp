@@ -1,29 +1,29 @@
-#include "eventmodel.h"
+#include "selecteddayeventsmodel.h"
 #include "sqlevent.h"
 
-EventModel::EventModel(QObject *parent)
+SelectedDayEventsModel::SelectedDayEventsModel(QObject *parent)
     : QAbstractListModel(parent)
     ,mList(nullptr)
 {
 }
 
-int EventModel::rowCount(const QModelIndex &parent) const
+int SelectedDayEventsModel::rowCount(const QModelIndex &parent) const
 {
     // For list models only the root node (an invalid parent) should return the list's size. For all
     // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
     if (parent.isValid() || !mList)
         return 0;
 
-    return mList->items().length();
+    return mList->currentItems().length();
 }
 
 
-QVariant EventModel::data(const QModelIndex &index, int role) const
+QVariant SelectedDayEventsModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || !mList)
         return QVariant();
 
-    const EventItem item = mList->items().at(index.row());
+    const EventItem item = mList->currentItems().at(index.row());
     switch (role) {
     case RoleID:
         return QVariant(item.id);
@@ -42,12 +42,12 @@ QVariant EventModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-bool EventModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool SelectedDayEventsModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (!mList)
         return false;
 
-    EventItem item = mList->items().at(index.row());
+    EventItem item = mList->currentItems().at(index.row());
     switch (role) {
     case RoleID:
         item.id = value.toInt();
@@ -76,7 +76,7 @@ bool EventModel::setData(const QModelIndex &index, const QVariant &value, int ro
     return false;
 }
 
-Qt::ItemFlags EventModel::flags(const QModelIndex &index) const
+Qt::ItemFlags SelectedDayEventsModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
         return Qt::NoItemFlags;
@@ -84,7 +84,7 @@ Qt::ItemFlags EventModel::flags(const QModelIndex &index) const
     return Qt::ItemIsEditable;
 }
 
-QHash<int, QByteArray> EventModel::roleNames() const
+QHash<int, QByteArray> SelectedDayEventsModel::roleNames() const
 {
     QHash<int, QByteArray> names;
     names[RoleID] = "id";
@@ -96,13 +96,13 @@ QHash<int, QByteArray> EventModel::roleNames() const
     return names;
 }
 
-SqlEvent *EventModel::list() const
+SqlEvent *SelectedDayEventsModel::list() const
 {
     return mList;
 }
 
 
-void EventModel::setList(SqlEvent *list)
+void SelectedDayEventsModel::setList(SqlEvent *list)
 {
     beginResetModel();
 
