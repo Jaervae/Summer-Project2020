@@ -18,9 +18,6 @@ Item {
     function loadImages(currentDate){
         return sqlEvent.eventsForDate(currentDate).length > 0;
     }
-    function loadImagess(currentDate){
-        return sqlEvent.eventsForDate(currentDate).length;
-    }
 
     Flow {
             id: row
@@ -35,16 +32,27 @@ Item {
                 frameVisible: true
                 weekNumbersVisible: true
                 selectedDate: new Date()
+                onClicked: eventsListView.model = sqlEvent.eventsForDate(calendar.selectedDate)
                 focus: true
-
-                style: CalendarStyle {
+                property var dataArr: new Object( {1: 1} )
+                 style: CalendarStyle {
                     dayDelegate: Item {
-
                         readonly property color sameMonthDateTextColor: "#444"
                         readonly property color selectedDateColor: Qt.platform.os === "osx" ? "#3778d0" : systemPalette.highlight
                         readonly property color selectedDateTextColor: "white"
                         readonly property color differentMonthDateTextColor: "#bbb"
                         readonly property color invalidDatecolor: "#17a81a"
+
+                        Label{
+                            font.pixelSize: 8
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            width: 12
+                            height: 10
+                            horizontalAlignment: Text.AlignHCenter
+                            text: calendar.dataArr[styleData.date.getDate()] ? calendar.dataArr[styleData.date.getDate()] : ""
+                            color: "orange"
+                        }
 
                         Rectangle {
                             anchors.fill: parent
@@ -84,6 +92,9 @@ Item {
                             }
                         }
                     }
+                }
+                Component.onCompleted:{
+                    //dataArr = new Object({26:8})
                 }
             }
 
@@ -134,17 +145,12 @@ Item {
                     height: parent.height - newButton.height
                     anchors.fill: parent
                     anchors.margins: 10
-                    //model: sqlEvent.eventsForDate(calendar.selectedDate)
+                    model: sqlEvent.eventsForDate(calendar.selectedDate)
 
-                    model: CurrentDayEventsModel{
-                        /*function myFunction(asd){
-                            var mylist = asd;
-                            console.log(asd);
-                            return asd;
-                        }*/
+                    /*model: CurrentDayEventsModel{
                         //list: sqlEvent.eventsForDate(calendar.selectedDate)
                         list: sqlEvent.getCurrentEventsForSelectedDate(calendar.selectedDate)
-                    }
+                    }*/
 
 
                     delegate: Rectangle {
@@ -177,15 +183,15 @@ Item {
                                 id: nameLabel
                                 width: parent.width
                                 wrapMode: Text.Wrap
-                                text: model.eventName
+                                text: modelData.name
                             }
 
                             Label {
                                 id: timeLabel
                                 width: parent.width
                                 wrapMode: Text.Wrap
-                                text: model.startDate.toLocaleTimeString(calendar.locale, Locale.ShortFormat) + " - " +
-                                      model.endDate.toLocaleTimeString(calendar.locale, Locale.ShortFormat)
+                                text: modelData.startDate.toLocaleTimeString(calendar.locale, Locale.ShortFormat) + " - " +
+                                      modelData.endDate.toLocaleTimeString(calendar.locale, Locale.ShortFormat)
                                 color: "#aaa"
                             }
                         }
@@ -197,8 +203,9 @@ Item {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             onClicked: {
-                                console.log("Delete " + model.id + " " + model.eventName)
-                                sqlEvent.removeOne(model.id);
+                                console.log("Delete " + modelData.id + " " + modelData.name)
+                                console.log(modelData.id)
+                                sqlEvent.removeOne(modelData.id);
                             }
 
                             style: ButtonStyle{
@@ -452,7 +459,8 @@ Item {
                                                                endDateTXT.text,
                                                                endTimeTXT.text);
                                         dialog.close();
-                                        calendar.update();
+                                        calendar.
+                                        eventsListView.model = sqlEvent.eventsForDate(calendar.selectedDate);
                                     }
                                     style: ButtonStyle{
                                         background: Rectangle {

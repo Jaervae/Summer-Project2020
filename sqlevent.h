@@ -27,7 +27,7 @@ public:
     explicit SqlEvent(QObject *parent = nullptr);
 
     Q_INVOKABLE QList<QObject*> eventsForDate(const QDate &date);
-
+    Q_INVOKABLE void getCurrentEventsForSelectedDate(const QDate &date);
 
     QVector<EventItem> items() const;
     QVector<EventItem> currentItems() const;
@@ -49,7 +49,7 @@ public slots:
     void newEvent(QString eventName, QString startDate, QString startTime, QString endDate, QString endTime);
     void appendItem(EventItem item);
     void removeOne(int index);
-    SqlEvent *getCurrentEventsForSelectedDate(const QDate &date);
+
 
 private:
     void createConnection();

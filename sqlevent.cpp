@@ -60,10 +60,11 @@ QList<QObject*> SqlEvent::eventsForDate(const QDate &date)
     if (!query.exec())
         qFatal("Query failed");
     QList<QObject*> events;
+    int i = 0;
     while (query.next()) {
         Event *event = new Event(this);
         event->setName(query.value("name").toString());
-
+        event->setDataId(query.value("id").toInt());
         QDateTime startDate;
         startDate.setDate(query.value("startDate").toDate());
         startDate.setTime(QTime(0, 0).addSecs(query.value("startTime").toInt()));
@@ -76,6 +77,7 @@ QList<QObject*> SqlEvent::eventsForDate(const QDate &date)
 
         events.append(event);
         qDebug()<<event->name();
+        i++;
     }
 
     return events;
@@ -116,6 +118,18 @@ void SqlEvent::newEvent(QString eventName, QString startDate, QString startTime,
     eventList.append(event);
     //qDebug()<<"New event added";
 
+
+    QSqlQuery query;
+    query.prepare("INSERT INTO Event (id, name, startDate, startTime, endDate, endTime) "
+                  "VALUES (:id, :name, :startDate, :startTime, :endDate, :endTime)");
+    query.bindValue(":id", event.id);
+    query.bindValue(":name", eventName);
+    query.bindValue(":startDate", mStartDate.date());
+    query.bindValue(":startTime", (mStartDate.time().msecsSinceStartOfDay() / 1000 ));
+    query.bindValue(":endDate", mEndDate.date());
+    query.bindValue(":endTime", (mEndDate.time().msecsSinceStartOfDay() / 1000 ));
+    query.exec();
+
     saveChanges();
     //createConnection();
     emit postItemAppended();
@@ -134,15 +148,16 @@ void SqlEvent::removeOne(int index)
 {
     emit preItemRemoved(index);
 
+    qDebug()<<index;
     eventList.removeAt(index);
     saveChanges();
 
     emit postItemRemoved();
 }
 
-SqlEvent *SqlEvent::getCurrentEventsForSelectedDate(const QDate &date)
+void SqlEvent::getCurrentEventsForSelectedDate(const QDate &date)
 {
-    const QString queryStr = QString::fromLatin1("SELECT * FROM Event WHERE '%1' >= startDate AND '%1' <= endDate").arg(date.toString("yyyy-MM-dd"));
+    /*const QString queryStr = QString::fromLatin1("SELECT * FROM Event WHERE '%1' >= startDate AND '%1' <= endDate").arg(date.toString("yyyy-MM-dd"));
     QSqlQuery query(queryStr);
     if (!query.exec())
         qFatal("Query failed");
@@ -163,8 +178,11 @@ SqlEvent *SqlEvent::getCurrentEventsForSelectedDate(const QDate &date)
 
         events->appendItem(*event);
         qDebug()<<event->eventName;
-    }
-    return events;
+    }*/
+
+    QList<QObject*> lista = eventsForDate(date);
+
+    //return events;
 }
 
 void SqlEvent::createConnection()
@@ -196,13 +214,14 @@ void SqlEvent::createConnection()
 
     QSqlQuery query;
     // We store the time as seconds because it's easier to query.
-    query.exec("create table Event (name TEXT, startDate DATE, startTime INT, endDate DATE, endTime INT)");
-    query.prepare("INSERT INTO Event (name, startDate, startTime, endDate, endTime) "
-                  "VALUES (:name, :startDate, :startTime, :endDate, :endTime)");
+    query.exec("create table Event (id INT, name TEXT, startDate DATE, startTime INT, endDate DATE, endTime INT)");
+    query.prepare("INSERT INTO Event (id, name, startDate, startTime, endDate, endTime) "
+                  "VALUES (:id, :name, :startDate, :startTime, :endDate, :endTime)");
     for (int i = 0; i < eventList.length(); i++){
         //qDebug()<< i;
         //qDebug()<< eventList[i]->startDate().date();
         //qDebug()<< (eventList[i]->startDate().time().msecsSinceStartOfDay() / 1000 );
+        query.bindValue(":id", i);
         query.bindValue(":name", eventList[i].eventName);
         query.bindValue(":startDate", eventList[i].startDate.date());
         query.bindValue(":startTime", (eventList[i].startDate.time().msecsSinceStartOfDay() / 1000 ));
@@ -235,6 +254,7 @@ bool SqlEvent::saveChanges()
                 .arg(eventList[i].endDate.date().month())
                 .arg(eventList[i].endDate.date().day());
         QJsonObject eventObj;
+        eventObj["id"] = eventList[i].id;
         eventObj["name"] = eventList[i].eventName;
         eventObj["start-date"] = startDate;
         eventObj["start-time"] = (eventList[i].startDate.time().msecsSinceStartOfDay() / 1000 );
@@ -304,7 +324,7 @@ bool SqlEvent::loadEvents()
         strList = str.split("-");
         QDateTime endDate;
         endDate.setDate(QDate(strList[0].toInt(),strList[1].toInt(),strList[2].toInt()));
-        endDate.setTime(QTime(0, 0).addSecs(v.toObject().value("start-time").toInt()));
+        endDate.setTime(QTime(0, 0).addSecs(v.toObject().value("end-time").toInt()));
         //event->setEndDate(endDate);
         event.endDate = endDate;
         //qDebug()<< eventList.length();
