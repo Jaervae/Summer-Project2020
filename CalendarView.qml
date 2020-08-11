@@ -116,7 +116,7 @@ Item {
                                 anchors.centerIn: parent
                                 color: {
                                     var color = "yellow";
-                                    if(dayofweeklabel.text == "su") {
+                                    if(dayofweeklabel.text == "su" || dayofweeklabel.text == "Sat") {
                                         color= "red";
                                     }
                                     color;
