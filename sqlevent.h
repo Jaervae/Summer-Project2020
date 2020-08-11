@@ -27,7 +27,7 @@ public:
     explicit SqlEvent(QObject *parent = nullptr);
 
     Q_INVOKABLE QList<QObject*> eventsForDate(const QDate &date);
-    Q_INVOKABLE void getCurrentEventsForSelectedDate(const QDate &date);
+    Q_INVOKABLE int eventcounter (const QDate &date);
 
     QVector<EventItem> items() const;
     QVector<EventItem> currentItems() const;

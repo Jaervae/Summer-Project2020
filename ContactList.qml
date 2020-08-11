@@ -83,7 +83,7 @@ ColumnLayout {
             spacing: 5
             delegate: Frame{
                 spacing: 10
-                width: parent.width
+                width: contactListView.width
                 ColumnLayout {
                     width: parent.width
                     RowLayout{

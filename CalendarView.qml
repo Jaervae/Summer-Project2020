@@ -19,6 +19,7 @@ Item {
         return sqlEvent.eventsForDate(currentDate).length > 0;
     }
 
+    readonly property color blackbg: "#191919"
     Flow {
             id: row
             anchors.fill: parent
@@ -34,33 +35,44 @@ Item {
                 selectedDate: new Date()
                 onClicked: eventsListView.model = sqlEvent.eventsForDate(calendar.selectedDate)
                 focus: true
-                property var dataArr: new Object( {1: 1} )
                  style: CalendarStyle {
-                    dayDelegate: Item {
-                        readonly property color sameMonthDateTextColor: "#444"
-                        readonly property color selectedDateColor: Qt.platform.os === "osx" ? "#3778d0" : systemPalette.highlight
+                     background: Rectangle {
+                             color: "#fff"
+                             implicitWidth: Math.max(250, Math.round(TextSingleton.implicitHeight * 14))
+                             implicitHeight: Math.max(250, Math.round(TextSingleton.implicitHeight * 14))
+                    }
+                    dayDelegate: Rectangle {
+                        ///Color values
+                        readonly property color sameMonthDateTextColor: "white" //#444
+                        readonly property color selectedDateColor: Qt.platform.os === "osx" ? "#3778d0" : selectedDateBG
                         readonly property color selectedDateTextColor: "white"
-                        readonly property color differentMonthDateTextColor: "#bbb"
-                        readonly property color invalidDatecolor: "#17a81a"
+                        readonly property color differentMonthDateTextColor: "#444"
+                        readonly property color invalidDatecolor: "red"
+                        readonly property color selectedDateBG: "green" //"#21be2b"
+
+                        color: styleData.selected ? "#FF2E7BD2" : (styleData.visibleMonth && styleData.valid ? "#191919" : "#191919");
 
                         Label{
                             font.pixelSize: 8
                             anchors.right: parent.right
-                            anchors.bottom: parent.bottom
+                            anchors.top: parent.top
                             width: 12
                             height: 10
                             horizontalAlignment: Text.AlignHCenter
-                            text: calendar.dataArr[styleData.date.getDate()] ? calendar.dataArr[styleData.date.getDate()] : ""
+                            text: sqlEvent.eventcounter(styleData.date) > 0 ? sqlEvent.eventcounter(styleData.date) : ""
                             color: "orange"
                         }
 
+                        //BG of dates
                         Rectangle {
                             anchors.fill: parent
                             border.color: "transparent"
+
                             color: styleData.date !== undefined && styleData.selected ? selectedDateColor : "transparent"
                             anchors.margins: styleData.selected ? -1 : 0
                         }
 
+                        //Event image
                         property alias valueImageVisible : valueImage.visible
                         Image {
                             id: valueImage
@@ -71,10 +83,9 @@ Item {
                             width: 12
                             height: width
                             source: "images/eventindicator.png"
-
-
                         }
 
+                        //Day indicators
                         Label {
                             id: dayDelegateText
                             text: styleData.date.getDate()
@@ -82,7 +93,6 @@ Item {
                             color: {
                                 var color = invalidDatecolor;
                                 if (styleData.valid) {
-                                    // Date is within the valid range.
                                     color = styleData.visibleMonth ? sameMonthDateTextColor : differentMonthDateTextColor;
                                     if (styleData.selected) {
                                         color = selectedDateTextColor;
@@ -92,9 +102,76 @@ Item {
                             }
                         }
                     }
-                }
-                Component.onCompleted:{
-                    //dataArr = new Object({26:8})
+
+                    weekNumberDelegate: Item {
+                        //Hide week number
+                    }
+
+                    dayOfWeekDelegate: Rectangle {
+                            color: blackbg
+                            implicitHeight: Math.round(TextSingleton.implicitHeight * 2.25)
+                            Label {
+                                id:dayofweeklabel
+                                text: control.locale.dayName(styleData.dayOfWeek, control.dayOfWeekFormat)
+                                anchors.centerIn: parent
+                                color: {
+                                    var color = "yellow";
+                                    if(dayofweeklabel.text == "su") {
+                                        color= "red";
+                                    }
+                                    color;
+                                }
+                            }
+                    }
+
+                    navigationBar: Rectangle {
+                        height: Math.round(TextSingleton.implicitHeight * 2.73)
+                        color: blackbg
+                        Rectangle {
+                            color: Qt.rgba(1,1,1,0.6)
+                            height: 1
+                            width: parent.width
+                        }
+
+                        Rectangle {
+                            anchors.bottom: parent.bottom
+                            height: 1
+                            width: parent.width
+                            color: "#ddd"
+                        }
+                        HoverButton {
+                            id: previousMonth
+                            width: parent.height
+                            height: width
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            source: "images/leftarrow2x.png"
+                            onClicked: calendar.showPreviousMonth()
+                        }
+                        Label {
+                            id: dateText
+                            text: styleData.title
+                            color: "green"
+                            elide: Text.ElideRight
+                            horizontalAlignment: Text.AlignHCenter
+                            font.pixelSize: TextSingleton.implicitHeight * 1.25
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: previousMonth.right
+                            anchors.leftMargin: 2
+                            anchors.right: nextMonth.left
+                            anchors.rightMargin: 2
+                        }
+                        HoverButton {
+                            id: nextMonth
+                            width: parent.height
+                            height: width
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: parent.right
+                            source: "images/rightarrow2x.png"
+                            onClicked: calendar.showNextMonth()
+                        }
+                    }
+
                 }
             }
 
@@ -111,6 +188,7 @@ Item {
                         id: eventDayLabel
                         text: calendar.selectedDate.getDate()
                         font.pointSize: 35
+                        color: "green"
                     }
 
                     Column {
@@ -120,11 +198,13 @@ Item {
                             readonly property var options: { weekday: "long" }
                             text: Qt.locale().standaloneDayName(calendar.selectedDate.getDay(), Locale.LongFormat)
                             font.pointSize: 18
+                            color: "green"
                         }
                         Label {
                             text: Qt.locale().standaloneMonthName(calendar.selectedDate.getMonth())
                                   + calendar.selectedDate.toLocaleDateString(Qt.locale(), " yyyy")
                             font.pointSize: 12
+                            color: "green"
                         }
                     }
                 }
@@ -135,6 +215,7 @@ Item {
                 height: (parent.height > parent.width ? parent.height * 0.4 - parent.spacing : parent.height)
                 border.color: Qt.darker(color, 1.2)
                 id: eventBox
+                color: blackbg
 
                 ListView {
                     id: eventsListView
@@ -157,6 +238,7 @@ Item {
                         width: eventsListView.width
                         height: eventItemColumn.height
                         anchors.horizontalCenter: parent.horizontalCenter
+                        color: blackbg
 
                         Image {
                             anchors.top: parent.top
@@ -184,6 +266,7 @@ Item {
                                 width: parent.width
                                 wrapMode: Text.Wrap
                                 text: modelData.name
+                                color: "white"
                             }
 
                             Label {
@@ -203,9 +286,12 @@ Item {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             onClicked: {
-                                console.log("Delete " + modelData.id + " " + modelData.name)
-                                console.log(modelData.id)
-                                sqlEvent.removeOne(modelData.id);
+                                console.log("Delete " + modelData.dataId + " " + modelData.name)
+                                console.log(modelData.dataId)
+                                sqlEvent.removeOne(modelData.dataId);
+                                calendar.showPreviousMonth();
+                                calendar.showNextMonth();
+                                eventsListView.model = sqlEvent.eventsForDate(calendar.selectedDate);
                             }
 
                             style: ButtonStyle{
@@ -244,12 +330,12 @@ Item {
                         background: Rectangle {
                             implicitWidth: 100
                             implicitHeight: 25
-                            border.width: control.activeFocus ? 2 : 1
-                            border.color: "#888"
+                            border.color: "green"
+                            border.width: 2
                             radius: 4
                             gradient: Gradient {
-                                GradientStop { position: 0 ; color: control.pressed ? "#ccc" : "#eee" }
-                                GradientStop { position: 1 ; color: control.pressed ? "#aaa" : "#ccc" }
+                                GradientStop { position: 0 ; color: calendar.pressed ? "white" : "#ccc" }
+                                GradientStop { position: 1 ; color: calendar.pressed ? "#ccc" : "white" }
                             }
                         }
                         label: Text {
@@ -286,7 +372,7 @@ Item {
                                 Text {
                                     id:labeltext
                                     text: "New event"
-                                    color: "white"
+                                    color: "green"
                                     font.pointSize: 20
                                 }
                             }
@@ -313,7 +399,7 @@ Item {
                                         background: Rectangle{
                                             implicitWidth: 100
                                             implicitHeight: 30
-                                            color: control.enabled ? "transparent" : "#353637"
+                                            color: calendar.enabled ? "transparent" : "#353637"
                                             border.color: "white"
                                         }
                                     }
@@ -347,7 +433,7 @@ Item {
                                         background: Rectangle{
                                             implicitWidth: 90
                                             implicitHeight: 30
-                                            color: control.enabled ? "transparent" : "#353637"
+                                            color: calendar.enabled ? "transparent" : "#353637"
                                             border.color: "white"
                                         }
                                     }
@@ -365,7 +451,7 @@ Item {
                                         background: Rectangle{
                                             implicitWidth: 50
                                             implicitHeight: 30
-                                            color: control.enabled ? "transparent" : "#353637"
+                                            color: calendar.enabled ? "transparent" : "#353637"
                                             border.color: "white"
                                         }
                                     }
@@ -397,7 +483,7 @@ Item {
                                         background: Rectangle{
                                             implicitWidth: 90
                                             implicitHeight: 30
-                                            color: control.enabled ? "transparent" : "#353637"
+                                            color: calendar.enabled ? "transparent" : "#353637"
                                             border.color: "white"
                                         }
                                     }
@@ -414,7 +500,7 @@ Item {
                                         background: Rectangle{
                                             implicitWidth: 50
                                             implicitHeight: 30
-                                            color: control.enabled ? "transparent" : "#353637"
+                                            color: calendar.enabled ? "transparent" : "#353637"
                                             border.color: "white"
                                         }
                                     }
@@ -429,7 +515,10 @@ Item {
                                 Button {
                                     text: qsTr("Cancel")
                                     id: btn1
-                                    onClicked: dialog.visible = false
+                                    onClicked: {
+                                        txtEventName.text = "";
+                                        dialog.visible = false
+                                    }
                                     style: ButtonStyle{
                                         background: Rectangle {
                                             color: "transparent"
@@ -458,9 +547,11 @@ Item {
                                                                startTimeTXT.text,
                                                                endDateTXT.text,
                                                                endTimeTXT.text);
+                                        txtEventName.text = "";
                                         dialog.close();
-                                        calendar.
                                         eventsListView.model = sqlEvent.eventsForDate(calendar.selectedDate);
+                                        calendar.showNextMonth();
+                                        calendar.showPreviousMonth();
                                     }
                                     style: ButtonStyle{
                                         background: Rectangle {

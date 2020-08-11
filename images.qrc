@@ -5,5 +5,8 @@
         <file>images/eventindicator.png</file>
         <file>images/menu1x.png</file>
         <file>images/menu2x.png</file>
+        <file>images/leftarrow1x.png</file>
+        <file>images/leftarrow2x.png</file>
+        <file>images/rightarrow2x.png</file>
     </qresource>
 </RCC>

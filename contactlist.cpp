@@ -278,20 +278,7 @@ void ContactList::saveToFile()
 }
 
 bool ContactList::loadList()
-{   /* Old one
-    QFile file(QStringLiteral("save.json"));
-
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning("Couldn't open save file.");
-        return false;
-    }
-    QByteArray jsonData = file.readAll();
-    file.close();
-
-    QJsonDocument jsonResponse = QJsonDocument::fromJson(jsonData);
-    QJsonArray jsonArray = jsonResponse.array();
-    */
-
+{
     Settings *settingsObj = new Settings();
     bool syncCloud = settingsObj->loadSetting("sync-cloud").toBool();
 

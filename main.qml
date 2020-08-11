@@ -142,8 +142,6 @@ ApplicationWindow {
                         rootWindow.saveSignal.connect(contactListTab.saveSlot)
                         rootWindow.loadSignal.connect(contactListTab.loadSlot)
                     }
-
-
                 }
 
             }
