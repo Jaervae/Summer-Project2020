@@ -246,9 +246,6 @@ ColumnLayout {
                                             }
                                         }
                                     }
-                                    TextField{
-                                        placeholderText: qsTr("enetrnam")
-                                    }
 
                                 }
                             }

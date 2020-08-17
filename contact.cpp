@@ -1,6 +1,5 @@
 #include "contact.h"
 
-
 Contact::Contact(int id, QString fn, QString ln, QString mobile, QString email)
 {
     this->id = id;

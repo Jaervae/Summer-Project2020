@@ -116,7 +116,7 @@ Item {
                                 anchors.centerIn: parent
                                 color: {
                                     var color = "yellow";
-                                    if(dayofweeklabel.text == "su" || dayofweeklabel.text == "Sat") {
+                                    if(dayofweeklabel.text == "su" || dayofweeklabel.text == "Sun") {
                                         color= "red";
                                     }
                                     color;
@@ -209,7 +209,6 @@ Item {
                     }
                 }
             }
-
             Rectangle {
                 width: (parent.width > parent.height ? parent.width * 0.4 - parent.spacing : parent.width)
                 height: (parent.height > parent.width ? parent.height * 0.4 - parent.spacing : parent.height)
@@ -227,12 +226,6 @@ Item {
                     anchors.fill: parent
                     anchors.margins: 10
                     model: sqlEvent.eventsForDate(calendar.selectedDate)
-
-                    /*model: CurrentDayEventsModel{
-                        //list: sqlEvent.eventsForDate(calendar.selectedDate)
-                        list: sqlEvent.getCurrentEventsForSelectedDate(calendar.selectedDate)
-                    }*/
-
 
                     delegate: Rectangle {
                         width: eventsListView.width
