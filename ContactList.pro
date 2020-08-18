@@ -4,6 +4,7 @@ QT += core
 QT += quickcontrols2
 QT += widgets
 QT += qml quick sql
+QT += androidextras
 
 
 CONFIG += c++11
@@ -26,6 +27,7 @@ SOURCES += \
         eventmodel.cpp \
         fetchdata.cpp \
         main.cpp \
+        notificationclient.cpp \
         selecteddayeventsmodel.cpp \
         settings.cpp \
         sqlevent.cpp
@@ -52,8 +54,28 @@ HEADERS += \
     event.h \
     eventmodel.h \
     fetchdata.h \
+    notificationclient.h \
     selecteddayeventsmodel.h \
     settings.h \
     sqlevent.h
 
-DISTFILES += \
+DISTFILES += \ \
+    android/AndroidManifest.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew \
+    android/gradlew.bat \
+    android/res/values/libs.xml \
+    android/src/com/qtproject/example/notification/EventScheduler.java \
+    android/src/com/qtproject/example/notification/MyNotificationPublisher.java
+
+android {
+    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+    DISTFILES += \
+        android/AndroidManifest.xml \
+        android/src/com/qtproject/example/notification/NotificationClient.java \
+        android/build.gradle \
+        android/res/values/libs.xml
+}

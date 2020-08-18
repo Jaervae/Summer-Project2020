@@ -14,6 +14,7 @@
 #include "sqlevent.h"
 #include "eventmodel.h"
 #include "selecteddayeventsmodel.h"
+#include "notificationclient.h"
 
 int main(int argc, char *argv[])
 {
@@ -35,12 +36,16 @@ int main(int argc, char *argv[])
     SqlEvent sqlEvent;
     Settings settings;
 
+
     QQmlApplicationEngine engine;
+    NotificationClient *notificationClient = new NotificationClient(&engine);
+
     engine.rootContext()->setContextProperty(QStringLiteral("contactList"), &contactList);
     engine.rootContext()->setContextProperty(QStringLiteral("settings"), &settings);
     engine.rootContext()->setContextProperty(QStringLiteral("sqlEvent"), &sqlEvent);
+    engine.rootContext()->setContextProperty(QLatin1String("notificationClient"), notificationClient);
 
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)

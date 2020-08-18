@@ -1,9 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
-        <file>ContactList.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/ContactList.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>Settings.qml</file>
-        <file>CalendarView.qml</file>
+        <file>qml/Settings.qml</file>
+        <file>qml/CalendarView.qml</file>
     </qresource>
 </RCC>

@@ -47,7 +47,7 @@ ApplicationWindow {
                     horizontalAlignment: Image.AlignHCenter
                     verticalAlignment: Image.AlignVCenter
                     id: backimage
-                    source: "images/back2x.png"
+                    source: "qrc:/images/back2x.png"
                 }
                 onClicked: {
                     loader.active = false
@@ -66,7 +66,7 @@ ApplicationWindow {
                     horizontalAlignment: Image.AlignHCenter
                     verticalAlignment: Image.AlignVCenter
                     id: menuimage
-                    source: "images/menu2x.png"
+                    source: "qrc:/images/menu2x.png"
                 }
 
                 onClicked: {

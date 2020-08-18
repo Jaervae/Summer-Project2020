@@ -72,8 +72,8 @@ Item {
                             anchors.margins: styleData.selected ? -1 : 0
                         }
 
-                        //Event image
-                        property alias valueImageVisible : valueImage.visible
+                        //Event image DISABLED´
+                        /*
                         Image {
                             id: valueImage
                             visible: loadImages(styleData.date)
@@ -82,8 +82,9 @@ Item {
                             anchors.margins: -1
                             width: 12
                             height: width
-                            source: "images/eventindicator.png"
+                            source: "qrc:/images/eventindicator.png"
                         }
+                        */
 
                         //Day indicators
                         Label {
@@ -145,7 +146,7 @@ Item {
                             height: width
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
-                            source: "images/leftarrow2x.png"
+                            source: "qrc:/images/leftarrow2x.png"
                             onClicked: calendar.showPreviousMonth()
                         }
                         Label {
@@ -167,7 +168,7 @@ Item {
                             height: width
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: parent.right
-                            source: "images/rightarrow2x.png"
+                            source: "qrc:/images/rightarrow2x.png"
                             onClicked: calendar.showNextMonth()
                         }
                     }
@@ -238,7 +239,7 @@ Item {
                             anchors.topMargin: 4
                             width: 12
                             height: width
-                            source: "images/eventindicator.png"
+                            source: "qrc:/images/eventindicator.png"
                         }
 
                         Rectangle {
@@ -540,11 +541,13 @@ Item {
                                                                startTimeTXT.text,
                                                                endDateTXT.text,
                                                                endTimeTXT.text);
+                                        notificationClient.notification = txtEventName.text
                                         txtEventName.text = "";
                                         dialog.close();
                                         eventsListView.model = sqlEvent.eventsForDate(calendar.selectedDate);
                                         calendar.showNextMonth();
                                         calendar.showPreviousMonth();
+
                                     }
                                     style: ButtonStyle{
                                         background: Rectangle {
