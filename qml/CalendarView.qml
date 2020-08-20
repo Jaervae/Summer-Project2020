@@ -350,7 +350,7 @@ Item {
                     id:dialog
                     title: "Add new event"
                     contentItem: Rectangle{
-                        implicitHeight: 200
+                        implicitHeight: 240
                         implicitWidth: 300
                         color: "black"
                         opacity: enabled ? 1 : 0.3
@@ -403,7 +403,7 @@ Item {
 
                             Row{
                                 id:rowStartDate
-                                anchors.topMargin: 5
+                                anchors.topMargin: 10
                                 anchors.top: rowEventName.bottom
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 Text {
@@ -421,12 +421,12 @@ Item {
                                           (calendar.selectedDate.getMonth() + 1) + "-" +
                                           calendar.selectedDate.toLocaleDateString(Qt.locale(), "yyyy")
                                     inputMethodHints: Qt.ImhNoPredictiveText
-                                    placeholderText: "dd-mm-yyyy"
+                                    placeholderText: "dd.mm.yyyy"
                                     textColor: "white"
                                     style: TextFieldStyle{
                                         background: Rectangle{
-                                            implicitWidth: 90
-                                            implicitHeight: 30
+                                            implicitWidth: 100
+                                            implicitHeight: 35
                                             color: calendar.enabled ? "transparent" : "#353637"
                                             border.color: "white"
                                         }
@@ -443,8 +443,8 @@ Item {
                                     placeholderText: "hh:mm"
                                     style: TextFieldStyle{
                                         background: Rectangle{
-                                            implicitWidth: 50
-                                            implicitHeight: 30
+                                            implicitWidth: 60
+                                            implicitHeight: 35
                                             color: calendar.enabled ? "transparent" : "#353637"
                                             border.color: "white"
                                         }
@@ -471,12 +471,12 @@ Item {
                                           (calendar.selectedDate.getMonth() + 1) + "-" +
                                           calendar.selectedDate.toLocaleDateString(Qt.locale(), "yyyy")
                                     inputMethodHints: Qt.ImhNoPredictiveText
-                                    placeholderText: "dd-mm-yyyy"
+                                    placeholderText: "dd.mm.yyyy"
                                     textColor: "white"
                                     style: TextFieldStyle{
                                         background: Rectangle{
-                                            implicitWidth: 90
-                                            implicitHeight: 30
+                                            implicitWidth: 100
+                                            implicitHeight: 35
                                             color: calendar.enabled ? "transparent" : "#353637"
                                             border.color: "white"
                                         }
@@ -492,19 +492,58 @@ Item {
                                     textColor: "white"
                                     style: TextFieldStyle{
                                         background: Rectangle{
-                                            implicitWidth: 50
-                                            implicitHeight: 30
+                                            implicitWidth: 60
+                                            implicitHeight: 35
                                             color: calendar.enabled ? "transparent" : "#353637"
                                             border.color: "white"
                                         }
                                     }
                                 }
                             }
+
                             Row{
-                                id:rowButtons
+                                id:checkBoxRow
                                 anchors.topMargin: 10
                                 anchors.top: rowEndDate.bottom
                                 anchors.horizontalCenter: rowEndDate.horizontalCenter
+                                CheckBox{
+                                    id:checkbox
+                                    text: qsTr("Notify 30minutes before event")
+                                    checked: false
+                                    style: CheckBoxStyle{
+                                        indicator: Rectangle {
+                                            implicitWidth: 26
+                                            implicitHeight: 26
+                                            y: parent.height / 2 - height / 2
+                                            radius: 3
+                                            border.color: checkbox.down ? "#17a81a" : "#21be2b"
+
+                                            Rectangle {
+                                                width: 14
+                                                height: 14
+                                                x: 6
+                                                y: 6
+                                                radius: 2
+                                                color: checkbox.down ? "#17a81a" : "#21be2b"
+                                                visible: checkbox.checked
+                                            }
+                                        }
+                                        label: Text {
+                                            text: checkbox.text
+                                            opacity: enabled ? 1.0 : 0.3
+                                            color: checkbox.down ? "#17a81a" : "#21be2b"
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                    }
+
+                                }
+                            }
+
+                            Row{
+                                id:rowButtons
+                                anchors.topMargin: 10
+                                anchors.top: checkBoxRow.bottom
+                                anchors.horizontalCenter: checkBoxRow.horizontalCenter
 
                                 Button {
                                     text: qsTr("Cancel")
@@ -541,7 +580,12 @@ Item {
                                                                startTimeTXT.text,
                                                                endDateTXT.text,
                                                                endTimeTXT.text);
-                                        notificationClient.notification = txtEventName.text
+                                        if (checkbox.checked){
+                                            notificationClient.date = startDateTXT.text; console.log(startDateTXT.text);
+                                            notificationClient.time = startTimeTXT.text; console.log(startTimeTXT.text);
+                                            notificationClient.notification = txtEventName.text;
+                                            checkbox.checked = false;
+                                        }
                                         txtEventName.text = "";
                                         dialog.close();
                                         eventsListView.model = sqlEvent.eventsForDate(calendar.selectedDate);

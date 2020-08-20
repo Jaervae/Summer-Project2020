@@ -67,8 +67,7 @@ DISTFILES += \ \
     android/gradlew \
     android/gradlew.bat \
     android/res/values/libs.xml \
-    android/src/com/qtproject/example/notification/EventScheduler.java \
-    android/src/com/qtproject/example/notification/MyNotificationPublisher.java
+    android/src/com/qtproject/example/notification/Receiver.java
 
 android {
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
