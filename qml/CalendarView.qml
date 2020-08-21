@@ -18,6 +18,22 @@ Item {
     function loadImages(currentDate){
         return sqlEvent.eventsForDate(currentDate).length > 0;
     }
+    function isSameDay(mSelectedDate){
+        var currentDate = new Date();
+        var selectedDate = new Date(mSelectedDate);
+        if (currentDate.getFullYear() === selectedDate.getFullYear()){
+            console.log("Same Year");
+            if (currentDate.getMonth() === selectedDate.getMonth()){
+                console.log("Same Month");
+                if (currentDate.getDate() === selectedDate.getDate()){
+                    console.log("Same Day");
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     readonly property color blackbg: "#191919"
     Flow {
@@ -421,7 +437,7 @@ Item {
                                           (calendar.selectedDate.getMonth() + 1) + "-" +
                                           calendar.selectedDate.toLocaleDateString(Qt.locale(), "yyyy")
                                     inputMethodHints: Qt.ImhNoPredictiveText
-                                    placeholderText: "dd.mm.yyyy"
+                                    placeholderText: "dd-mm-yyyy"
                                     textColor: "white"
                                     style: TextFieldStyle{
                                         background: Rectangle{
@@ -437,7 +453,19 @@ Item {
                                     id: startTimeTXT
                                     anchors.rightMargin: 10
                                     anchors.leftMargin: 5
-                                    text: "9:00"
+                                    text: {
+                                        var isSame =isSameDay(calendar.selectedDate)
+                                        console.log(isSame)
+                                        var mText = "9:00"
+                                        if(isSame){
+                                            var hours = calendar.selectedDate.getHours()
+                                            var minutes = calendar.selectedDate.getMinutes()
+
+                                            mText = hours + ":" + minutes
+                                        }
+                                        mText;
+                                    }
+
                                     textColor: "white"
                                     inputMethodHints: Qt.ImhNoPredictiveText
                                     placeholderText: "hh:mm"
@@ -471,7 +499,7 @@ Item {
                                           (calendar.selectedDate.getMonth() + 1) + "-" +
                                           calendar.selectedDate.toLocaleDateString(Qt.locale(), "yyyy")
                                     inputMethodHints: Qt.ImhNoPredictiveText
-                                    placeholderText: "dd.mm.yyyy"
+                                    placeholderText: "dd-mm-yyyy"
                                     textColor: "white"
                                     style: TextFieldStyle{
                                         background: Rectangle{

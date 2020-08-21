@@ -7,6 +7,7 @@
     <!-- %%INSERT_PERMISSIONS -->
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <!-- The following comment will be replaced upon deployment with default features based on the dependencies of the application.
          Remove the comment if you do not require these default features. -->
@@ -83,11 +84,7 @@
     </activity>
 
     <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
-    <receiver android:name=".Receiver" android:enabled="true">
-        <intent-filter> <action android:name="NOTIFICATION_SERVICE"/>
-            </intent-filter>
-    </receiver>
+    <receiver android:name = ".MyNotificationPublisher" />
     </application>
-
 
 </manifest>
