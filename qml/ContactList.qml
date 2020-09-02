@@ -18,6 +18,25 @@ ColumnLayout {
         contactList.loadList()
     }
 
+
+
+    property bool loadingVisible: true
+
+    Rectangle{
+        id:loadingAnimationRec
+        width: parent.width; height: parent.height
+        visible:{
+             var done = (contactList.dataFetchingDone() === 'true');
+             console.log(done + "loool")
+             done;
+        }
+        color: "transparent"
+        LoadingAnimation{
+            id:loadingAnimation
+            visible: updateLoader()
+        }
+    }
+
     Frame {
         Layout.fillWidth: true
         Layout.fillHeight: true
@@ -36,6 +55,8 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignCenter
                 //anchors.left: searchRow.left
                 //anchors.right: btnsa.left
+                anchors.left: parent.left
+                anchors.right: btnsa.left
                 anchors.rightMargin: 10
                 anchors.leftMargin: 5
                 width: parent.fillWidth

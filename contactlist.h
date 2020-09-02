@@ -25,6 +25,8 @@ class ContactList : public QObject
 public:
     explicit ContactList(QObject *parent = nullptr);
 
+    Q_INVOKABLE bool dataFetchingDone();
+
     QVector<ContactItem> items() const;
     QVector<ContactItem> visibleItems() const;
 
@@ -39,6 +41,8 @@ signals:
 
     void preItemSave();
     void postItemSave();
+
+    void updateLoader(QVariant newValue);
 
 
 
@@ -58,6 +62,7 @@ private:
     QVector<ContactItem> mItems;
     QVector<ContactItem> mVisibleList;
 
+    bool fetchingDone;
     QString filename;
 
     int getAlpapheticOrder(QString value);

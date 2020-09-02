@@ -12,6 +12,10 @@ ApplicationWindow {
     signal saveSignal()
     signal loadSignal()
 
+    readonly property color backgroundColor: "#2e2e2e"
+    readonly property color lightGreenColor: "#21be2b"
+    readonly property color darkGreen: "green"
+
     Loader {
       id: loader
       anchors.fill: parent
@@ -111,7 +115,6 @@ ApplicationWindow {
         Material.accent: Material.color("21be2b",Material.Shade50)
         TabButton {
             text: qsTr("Contacts")
-
         }
         TabButton {
             text: qsTr("Calendar")
@@ -143,17 +146,17 @@ ApplicationWindow {
                         rootWindow.loadSignal.connect(contactListTab.loadSlot)
                     }
                 }
-
             }
 
             Item {
-                id: discoverTab
+               id: discoverTab
                CalendarView{
                    id: discoverListTab
                }
             }
             Item {
                 id: activityTab
+
             }
         }
     }

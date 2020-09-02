@@ -51,9 +51,12 @@ Item {
                 selectedDate: new Date()
                 onClicked: eventsListView.model = sqlEvent.eventsForDate(calendar.selectedDate)
                 focus: true
+
                  style: CalendarStyle {
+
                      background: Rectangle {
-                             color: "#fff"
+                             //color: "#fff"
+                             color: "transparent"
                              implicitWidth: Math.max(250, Math.round(TextSingleton.implicitHeight * 14))
                              implicitHeight: Math.max(250, Math.round(TextSingleton.implicitHeight * 14))
                     }

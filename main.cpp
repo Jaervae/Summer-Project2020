@@ -32,26 +32,26 @@ int main(int argc, char *argv[])
     qmlRegisterUncreatableType<SqlEvent>("Event", 1, 0, "SqlEvent",
         QStringLiteral("SqlEvent should not be created in QML"));
 
-    ContactList contactList;
-    SqlEvent sqlEvent;
-    Settings settings;
-
-
-    QQmlApplicationEngine engine;
-    NotificationClient *notificationClient = new NotificationClient(&engine);
-
-    engine.rootContext()->setContextProperty(QStringLiteral("contactList"), &contactList);
-    engine.rootContext()->setContextProperty(QStringLiteral("settings"), &settings);
-    engine.rootContext()->setContextProperty(QStringLiteral("sqlEvent"), &sqlEvent);
-    engine.rootContext()->setContextProperty(QLatin1String("notificationClient"), notificationClient);
 
     const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
+    QQmlApplicationEngine engine;
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
+
+    ContactList contactList;
+    SqlEvent sqlEvent;
+    Settings settings;
+
+    NotificationClient *notificationClient = new NotificationClient(&engine);
+
+    engine.rootContext()->setContextProperty(QStringLiteral("contactList"), &contactList);
+    engine.rootContext()->setContextProperty(QStringLiteral("settings"), &settings);
+    engine.rootContext()->setContextProperty(QStringLiteral("sqlEvent"), &sqlEvent);
+    engine.rootContext()->setContextProperty(QLatin1String("notificationClient"), notificationClient);
 
 
     return app.exec();

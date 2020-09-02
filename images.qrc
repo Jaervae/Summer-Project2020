@@ -8,5 +8,9 @@
         <file>images/leftarrow1x.png</file>
         <file>images/leftarrow2x.png</file>
         <file>images/rightarrow2x.png</file>
+        <file>images/loading.json</file>
+        <file>images/loading.gif</file>
+        <file>images/loading_anim.gif</file>
+        <file>images/loading_anim_2.gif</file>
     </qresource>
 </RCC>

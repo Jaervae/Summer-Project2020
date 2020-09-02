@@ -14,6 +14,11 @@ ContactList::ContactList(QObject *parent) : QObject(parent)
     this->getData();
 }
 
+bool ContactList::dataFetchingDone()
+{
+    return fetchingDone;
+}
+
 QVector<ContactItem> ContactList::items() const
 {
     return mItems;
@@ -70,6 +75,7 @@ void ContactList::getData()
 
         mVisibleList.insert(index, mItems[i]);
     }
+    fetchingDone = true;
     qDebug()<<"Kaikki lisatty";
 
 }
